@@ -336,7 +336,10 @@
         <h1 class="page-title" id="pageTitle">Mi agenda de hoy</h1>
         <div class="page-date" id="pageDate"></div>
       </div>
-      <button class="btn-new" onclick="window.open('booking.html','_blank')">+ Nueva reserva</button>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button id="btnRefresh" class="btn-new" style="background:transparent;border:1.5px solid var(--polar);color:var(--text);font-size:.85rem;padding:.55rem 1rem" onclick="refreshBookings()" title="Actualizar citas">🔄 Actualizar</button>
+        <button class="btn-new" onclick="window.open('booking.html','_blank')">+ Nueva reserva</button>
+      </div>
     </div>
 
     <!-- Stats -->
@@ -840,21 +843,24 @@ function markStatus(id, status, e) {
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjG17kUP-jjH0Z4Ub5qGUajbwY8tbgYpB8hPjzJDDzeh2v0biXtoiuaX91B_6Qkn18xQ/exec';
 let _cachedBookings = null;
 
-async function fetchBookingsFromSheets() {
-  try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'list' }),
-    });
-    const data = await res.json();
-    if (data.ok && Array.isArray(data.bookings)) {
-      _cachedBookings = data.bookings;
-      localStorage.setItem('mc_bookings', JSON.stringify(data.bookings));
-      return data.bookings;
+async function fetchBookingsFromSheets(retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'list' }),
+      });
+      const data = await res.json();
+      if (data.ok && Array.isArray(data.bookings)) {
+        _cachedBookings = data.bookings;
+        localStorage.setItem('mc_bookings', JSON.stringify(data.bookings));
+        return data.bookings;
+      }
+    } catch(e) {
+      if (i < retries - 1) await new Promise(r => setTimeout(r, 2000));
     }
-  } catch(e) {}
-  // fallback a localStorage si falla la red
+  }
   try { return JSON.parse(localStorage.getItem('mc_bookings') || '[]'); } catch { return []; }
 }
 
