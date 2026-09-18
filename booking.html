@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar cita — Mon Ciel Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --polar: #E8EDF4; --sand: #A8BAC8; --cambridge: #7B90A8;
+      --blue: #5A7492; --dark: #1E2A35; --gold: #C9943A;
+      --gold2: #b8841e; --white: #fff; --off: #F3F6F9;
+      --text: #2A3542; --muted: #6E80A0;
+      --r: 14px; --r-sm: 10px;
+      --sh: 0 2px 18px rgba(30,42,53,.09);
+      --sh2: 0 6px 36px rgba(30,42,53,.16);
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', system-ui, sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ── */
+    .bk-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .bk-logo img { height: 44px; width: 130px; object-fit: contain; filter: invert(1); display: block; }
+    .bk-back { font-size: .78rem; font-weight: 400; color: rgba(255,255,255,.45);
+      text-decoration: none; letter-spacing: .06em; text-transform: uppercase; transition: color .2s; }
+    .bk-back:hover { color: rgba(255,255,255,.8); }
+
+    /* ── PROGRESS ── */
+    .bk-progress { padding: 1.25rem 1.5rem 1.5rem; }
+    .steps-bar {
+      display: flex; align-items: center;
+      max-width: 520px; margin: 0 auto; gap: 0;
+    }
+    .sbar-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      gap: .35rem; position: relative;
+    }
+    .sbar-item::after {
+      content: ''; position: absolute; top: 11px;
+      left: calc(50% + 13px); right: calc(-50% + 13px);
+      height: 1px; background: rgba(255,255,255,.12); transition: background .4s;
+    }
+    .sbar-item:last-child::after { display: none; }
+    .sbar-item.done::after { background: var(--gold); }
+    .sbar-dot {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .6rem; font-weight: 600; color: rgba(255,255,255,.25);
+      transition: all .3s; position: relative; z-index: 1; background: transparent;
+    }
+    .sbar-item.active .sbar-dot { border-color: var(--gold); background: var(--gold); color: #fff; }
+    .sbar-item.done .sbar-dot { border-color: var(--gold); background: var(--gold); color: #fff; }
+    .sbar-item.done .sbar-dot::before { content: '✓'; }
+    .sbar-item:not(.done) .sbar-dot span { display: block; }
+    .sbar-item.done .sbar-dot span { display: none; }
+    .sbar-label { font-size: .6rem; font-weight: 400; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(255,255,255,.25); text-align: center;
+      transition: color .3s; }
+    .sbar-item.active .sbar-label, .sbar-item.done .sbar-label { color: rgba(255,255,255,.65); }
+
+    /* ── MAIN PANEL ── */
+    .bk-panel {
+      background: var(--off);
+      border-radius: 20px 20px 0 0;
+      min-height: calc(100dvh - 200px);
+      overflow: hidden;
+    }
+
+    /* ── STEPS ── */
+    .step { display: none; padding: 1.75rem 1.5rem; max-width: 700px; margin: 0 auto;
+      animation: slideIn .3s ease; }
+    .step.active { display: block; }
+    .step.back { animation: slideBack .3s ease; }
+
+    @keyframes slideIn  { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+    @keyframes slideBack{ from { opacity:0; transform:translateX(-20px);} to { opacity:1; transform:none; } }
+
+    /* ── STEP HEADER ── */
+    .step-tag { font-size: .68rem; font-weight: 600; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--gold); display: block; margin-bottom: .4rem; }
+    .step-h1 { font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(1.55rem, 4vw, 2.1rem); font-weight: 300;
+      color: var(--dark); line-height: 1.2; margin-bottom: .4rem; }
+    .step-sub { font-size: .88rem; color: var(--muted); font-weight: 300; margin-bottom: 1.75rem; }
+
+    /* ── CATEGORY TABS ── */
+    .cat-tabs { display: flex; gap: .4rem; margin-bottom: 1.25rem;
+      overflow-x: auto; padding-bottom: .1rem; scrollbar-width: none; }
+    .cat-tabs::-webkit-scrollbar { display: none; }
+    .cat-tab { padding: .45rem 1.1rem; border-radius: 100px;
+      border: 1.5px solid var(--sand); background: transparent;
+      font-family: 'Jost', sans-serif; font-size: .8rem; font-weight: 500;
+      color: var(--muted); cursor: pointer; white-space: nowrap; transition: all .2s; }
+    .cat-tab:hover { border-color: var(--blue); color: var(--blue); }
+    .cat-tab.active { background: var(--dark); border-color: var(--dark); color: #fff; }
+
+    /* ── SERVICE GRID ── */
+    .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .85rem; }
+    .svc-card { background: #fff; border-radius: var(--r); padding: 1.1rem;
+      cursor: pointer; border: 2px solid transparent; transition: all .22s;
+      box-shadow: var(--sh); position: relative; }
+    .svc-card:hover { transform: translateY(-2px); box-shadow: var(--sh2); border-color: var(--cambridge); }
+    .svc-card.sel { border-color: var(--gold); background: #FFFBF5; }
+    .svc-card.sel::after { content: '✓'; position: absolute; top: .65rem; right: .65rem;
+      width: 18px; height: 18px; background: var(--gold); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .58rem; color: #fff; font-weight: 700; }
+    .svc-icon { font-size: 1.4rem; margin-bottom: .6rem; display: block; }
+    .svc-name { font-weight: 500; font-size: .92rem; color: var(--text); margin-bottom: .25rem; }
+    .svc-desc { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .svc-foot { display: flex; align-items: center; justify-content: space-between;
+      margin-top: .85rem; padding-top: .7rem; border-top: 1px solid var(--polar); }
+    .svc-dur { font-size: .73rem; color: var(--muted); }
+    .svc-price { font-size: .83rem; font-weight: 600; color: var(--blue); }
+    .svc-price-from { font-size: .7rem; font-weight: 400; color: var(--muted); display: block; text-align: right; }
+
+    /* ── PRICE NOTICE ── */
+    .price-notice {
+      display: flex; align-items: flex-start; gap: .6rem;
+      background: #FFF8EC; border: 1px solid #f0d88a; border-radius: var(--r-sm);
+      padding: .75rem 1rem; margin-bottom: 1.25rem; font-size: .8rem; color: #7a5c10; line-height: 1.45;
+    }
+    .price-notice-icon { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+
+    /* ── EMPLOYEE GRID ── */
+    .emp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: .85rem; }
+    .emp-card { background: #fff; border-radius: var(--r); padding: 1.4rem 1rem;
+      cursor: pointer; border: 2px solid transparent; transition: all .22s;
+      box-shadow: var(--sh); text-align: center; }
+    .emp-card:hover { transform: translateY(-2px); box-shadow: var(--sh2); border-color: var(--cambridge); }
+    .emp-card.sel { border-color: var(--gold); background: #FFFBF5; }
+    .emp-card.any { border: 2px dashed var(--sand); background: transparent; box-shadow: none; }
+    .emp-card.any:hover { border-color: var(--cambridge); background: rgba(255,255,255,.6); }
+    .emp-avatar { width: 56px; height: 56px; border-radius: 50%;
+      background: var(--polar); display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 400;
+      color: var(--blue); margin: 0 auto .9rem; letter-spacing: -.02em; }
+    .emp-any-av { background: transparent; color: var(--cambridge); font-size: 1.6rem; }
+    .emp-name { font-weight: 500; font-size: .9rem; color: var(--text); }
+    .emp-role { font-size: .73rem; color: var(--muted); margin-top: .15rem; }
+
+    /* ── CALENDAR ── */
+    .cal-wrap { background: #fff; border-radius: var(--r); padding: 1.4rem; box-shadow: var(--sh); }
+    .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+    .cal-month-label { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem;
+      font-weight: 400; color: var(--dark); text-transform: capitalize; }
+    .cal-nav { background: none; border: none; cursor: pointer; padding: .35rem .5rem;
+      color: var(--blue); font-size: 1rem; border-radius: 8px; transition: background .2s; }
+    .cal-nav:hover { background: var(--polar); }
+    .cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: .35rem; }
+    .cal-dl { text-align: center; font-size: .6rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: .2rem 0; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .cal-d { aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      border-radius: 9px; font-size: .85rem; color: var(--text);
+      cursor: pointer; transition: all .18s; border: 2px solid transparent; }
+    .cal-d:hover:not(.off):not(.past) { background: var(--polar); border-color: var(--cambridge); }
+    .cal-d.sel { background: var(--gold) !important; border-color: var(--gold) !important; color: #fff !important; font-weight: 600; }
+    .cal-d.today { border-color: var(--cambridge); }
+    .cal-d.past, .cal-d.off { color: var(--sand); pointer-events: none; }
+    .cal-d.empty { pointer-events: none; }
+    .cal-d.sunday { color: var(--sand); pointer-events: none; }
+
+    /* ── TIME SLOTS ── */
+    .slots-info { background: #fff; border-radius: var(--r-sm); padding: .9rem 1.1rem;
+      margin-bottom: 1rem; display: flex; align-items: center; gap: 1.5rem;
+      box-shadow: var(--sh); }
+    .slots-info-item .label { font-size: .67rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted); }
+    .slots-info-item .val { font-size: .92rem; font-weight: 500; color: var(--text); margin-top: .1rem; }
+    .slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: .65rem; }
+    .slot { padding: .7rem; background: #fff; border: 2px solid var(--polar);
+      border-radius: var(--r-sm); text-align: center; cursor: pointer;
+      font-family: 'Jost', sans-serif; font-size: .88rem; font-weight: 500;
+      color: var(--text); transition: all .18s; }
+    .slot:hover:not(.taken) { border-color: var(--cambridge); background: var(--polar); }
+    .slot.sel { background: var(--gold); border-color: var(--gold); color: #fff; }
+    .slot.taken { background: var(--off); color: var(--sand); pointer-events: none; text-decoration: line-through; }
+
+    /* ── SUMMARY BOX ── */
+    .summary-box { background: #fff; border-radius: var(--r); padding: 1.1rem 1.25rem;
+      box-shadow: var(--sh); margin-bottom: 1.4rem; }
+    .summary-tag { font-size: .67rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: .9rem; }
+    .summary-rows { display: grid; gap: .7rem; }
+    .summary-row { display: flex; align-items: flex-start; gap: .65rem; }
+    .summary-ico { font-size: .95rem; flex-shrink: 0; margin-top: .05rem; }
+    .summary-lbl { font-size: .7rem; color: var(--muted); margin-bottom: .08rem; }
+    .summary-val { font-size: .9rem; font-weight: 500; color: var(--text); }
+
+    /* ── CONTACT FORM ── */
+    .form-grid { display: grid; gap: .9rem; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+    @media(max-width:480px){ .form-row-2 { grid-template-columns: 1fr; } }
+    .fg { display: flex; flex-direction: column; gap: .35rem; }
+    .fg label { font-size: .7rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--muted); }
+    .fg input, .fg textarea { padding: .8rem 1rem; border: 1.5px solid var(--polar);
+      border-radius: var(--r-sm); font-family: 'Jost', sans-serif; font-size: .93rem;
+      color: var(--text); background: #fff; transition: border-color .2s; outline: none;
+      resize: none; }
+    .fg input:focus, .fg textarea:focus { border-color: var(--blue); }
+    .fg input::placeholder { color: var(--sand); }
+
+    /* ── CONFIRMATION ── */
+    .confirm-wrap { text-align: center; padding: 2rem 1rem 3rem; }
+    .confirm-check { width: 68px; height: 68px; background: #27AE60; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; margin: 0 auto 1.4rem;
+      animation: popIn .45s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+    .confirm-h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.8rem,5vw,2.4rem);
+      font-weight: 300; color: var(--dark); margin-bottom: .5rem; }
+    .confirm-sub { font-size: .9rem; color: var(--muted); max-width: 360px;
+      margin: 0 auto 2rem; line-height: 1.65; }
+    .confirm-details { background: #fff; border-radius: var(--r); padding: 1.4rem;
+      box-shadow: var(--sh); max-width: 380px; margin: 0 auto 2rem; text-align: left; }
+    .confirm-detail-row { display: flex; gap: .7rem; align-items: flex-start; }
+    .confirm-detail-row + .confirm-detail-row { margin-top: .8rem; }
+    .confirm-detail-ico { font-size: 1rem; }
+    .confirm-detail-label { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .confirm-detail-val { font-size: .92rem; font-weight: 500; color: var(--text); }
+    .confirm-total { display: flex; justify-content: space-between; align-items: center;
+      padding-top: .9rem; margin-top: .9rem; border-top: 1px solid var(--polar); }
+    .confirm-total span:first-child { font-size: .8rem; color: var(--muted); }
+    .confirm-total span:last-child { font-size: 1.1rem; font-weight: 700; color: var(--dark); }
+    .btn-wa { display: inline-flex; align-items: center; gap: .55rem;
+      background: #25D366; color: #fff; padding: .82rem 1.75rem; border-radius: 100px;
+      text-decoration: none; font-weight: 600; font-size: .9rem; transition: opacity .2s; }
+    .btn-wa:hover { opacity: .88; }
+    .btn-wa svg { flex-shrink: 0; }
+
+    /* ── BOTTOM NAV ── */
+    .bk-nav { position: sticky; bottom: 0; background: var(--off);
+      border-top: 1px solid var(--polar); padding: .9rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .btn-back { background: transparent; border: none; padding: .85rem 1rem;
+      font-family: 'Jost', sans-serif; font-size: .88rem; font-weight: 400;
+      color: var(--muted); cursor: pointer; transition: color .2s; border-radius: 100px; }
+    .btn-back:hover { color: var(--text); }
+    .step-ctr { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+    .btn-next { padding: .85rem 2rem; border-radius: 100px; border: none;
+      font-family: 'Jost', sans-serif; font-size: .9rem; font-weight: 500;
+      cursor: pointer; transition: all .2s; flex: 1; max-width: 260px; }
+    .btn-next.dark { background: var(--dark); color: #fff; }
+    .btn-next.dark:hover { background: var(--blue); }
+    .btn-next.gold { background: var(--gold); color: #fff; }
+    .btn-next.gold:hover { background: var(--gold2); }
+    .btn-next:disabled { opacity: .35; pointer-events: none; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:480px) {
+      .svc-grid { grid-template-columns: 1fr 1fr; }
+      .emp-grid { grid-template-columns: repeat(2,1fr); }
+      .slots-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="bk-header">
+  <a href="index.html" class="bk-logo">
+    <img src="logo.png" alt="Mon Ciel Studio">
+  </a>
+  <a href="index.html" class="bk-back">← Volver al sitio</a>
+</header>
+
+<!-- PROGRESS -->
+<div class="bk-progress" id="bkProgress">
+  <div class="steps-bar">
+    <div class="sbar-item active" data-s="1">
+      <div class="sbar-dot"><span>1</span></div>
+      <div class="sbar-label">Servicio</div>
+    </div>
+    <div class="sbar-item" data-s="2">
+      <div class="sbar-dot"><span>2</span></div>
+      <div class="sbar-label">Especialista</div>
+    </div>
+    <div class="sbar-item" data-s="3">
+      <div class="sbar-dot"><span>3</span></div>
+      <div class="sbar-label">Fecha</div>
+    </div>
+    <div class="sbar-item" data-s="4">
+      <div class="sbar-dot"><span>4</span></div>
+      <div class="sbar-label">Hora</div>
+    </div>
+    <div class="sbar-item" data-s="5">
+      <div class="sbar-dot"><span>5</span></div>
+      <div class="sbar-label">Datos</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN PANEL -->
+<main class="bk-panel">
+
+  <!-- STEP 1 — SERVICIO -->
+  <div class="step active" id="step1">
+    <span class="step-tag">Paso 1</span>
+    <h1 class="step-h1">¿Qué servicio deseas?</h1>
+    <p class="step-sub">Selecciona el tratamiento que buscas hoy</p>
+    <div class="price-notice">
+      <span class="price-notice-icon">ℹ️</span>
+      <span>Los precios marcados con <strong>"Desde"</strong> varían según el largo y la abundancia de tu cabello. El precio exacto se confirma con tu especialista al llegar al salón.</span>
+    </div>
+    <div class="cat-tabs" id="catTabs"></div>
+    <div class="svc-grid" id="svcGrid"></div>
+  </div>
+
+  <!-- STEP 2 — ESPECIALISTA -->
+  <div class="step" id="step2">
+    <span class="step-tag">Paso 2</span>
+    <h1 class="step-h1">¿Con quién te gustaría?</h1>
+    <p class="step-sub">Elige tu especialista o déjalo a nuestra elección</p>
+    <div class="emp-grid" id="empGrid"></div>
+  </div>
+
+  <!-- STEP 3 — FECHA -->
+  <div class="step" id="step3">
+    <span class="step-tag">Paso 3</span>
+    <h1 class="step-h1">¿Qué día te viene bien?</h1>
+    <p class="step-sub">Abierto de lunes a sábado · 9:00 a 18:00</p>
+    <div class="cal-wrap">
+      <div class="cal-head">
+        <button class="cal-nav" id="calPrev">‹</button>
+        <span class="cal-month-label" id="calLabel"></span>
+        <button class="cal-nav" id="calNext">›</button>
+      </div>
+      <div class="cal-dow">
+        <div class="cal-dl">Dom</div><div class="cal-dl">Lun</div>
+        <div class="cal-dl">Mar</div><div class="cal-dl">Mié</div>
+        <div class="cal-dl">Jue</div><div class="cal-dl">Vie</div>
+        <div class="cal-dl">Sáb</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </div>
+
+  <!-- STEP 4 — HORA -->
+  <div class="step" id="step4">
+    <span class="step-tag">Paso 4</span>
+    <h1 class="step-h1">¿A qué hora?</h1>
+    <p class="step-sub" id="step4Sub">Horarios disponibles</p>
+    <div class="slots-info">
+      <div class="slots-info-item">
+        <div class="label">Servicio</div>
+        <div class="val" id="slotSvcName">—</div>
+      </div>
+      <div class="slots-info-item">
+        <div class="label">Duración</div>
+        <div class="val" id="slotDur">—</div>
+      </div>
+    </div>
+    <div class="slots-grid" id="slotsGrid"></div>
+  </div>
+
+  <!-- STEP 5 — DATOS -->
+  <div class="step" id="step5">
+    <span class="step-tag">Paso 5</span>
+    <h1 class="step-h1">Tus datos</h1>
+    <p class="step-sub">Casi listo — solo necesitamos tus datos para confirmar</p>
+    <div class="summary-box">
+      <div class="summary-tag">Resumen de tu cita</div>
+      <div class="summary-rows" id="summaryRows"></div>
+    </div>
+    <form class="form-grid" id="contactForm" novalidate>
+      <div class="form-row-2">
+        <div class="fg">
+          <label for="fName">Nombre completo *</label>
+          <input type="text" id="fName" placeholder="Tu nombre" autocomplete="name">
+        </div>
+        <div class="fg">
+          <label for="fPhone">WhatsApp *</label>
+          <input type="tel" id="fPhone" placeholder="+506 8888 8888" autocomplete="tel">
+        </div>
+      </div>
+      <div class="fg">
+        <label for="fEmail">Correo electrónico</label>
+        <input type="email" id="fEmail" placeholder="tu@correo.com" autocomplete="email">
+      </div>
+      <div class="fg">
+        <label for="fNotes">Notas adicionales</label>
+        <input type="text" id="fNotes" placeholder="Alergias, preferencias, referencias…">
+      </div>
+    </form>
+  </div>
+
+  <!-- STEP 6 — CONFIRMACIÓN -->
+  <div class="step" id="step6">
+    <div class="confirm-wrap">
+      <div class="confirm-check">✓</div>
+      <h1 class="confirm-h1">¡Cita confirmada!</h1>
+      <p class="confirm-sub">Tu reserva fue registrada. ¡Te esperamos en Mon Ciel Studio! Podés confirmarla también por WhatsApp.</p>
+      <div class="confirm-details" id="confirmDetails"></div>
+      <a href="#" class="btn-wa" id="btnWa" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Confirmar por WhatsApp
+      </a>
+      <div style="margin-top:1.25rem">
+        <a href="index.html" class="btn-back" style="text-decoration:none;padding:.7rem 1.2rem;display:inline-block">← Volver al inicio</a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<div class="bk-nav" id="bkNav">
+  <button class="btn-back" id="btnBack" onclick="goBack()" hidden>← Atrás</button>
+  <span class="step-ctr" id="stepCtr">Paso 1 de 5</span>
+  <button class="btn-next dark" id="btnNext" onclick="goNext()" disabled>Continuar →</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG — Cambiá APPS_SCRIPT_URL para activar Google Calendar
+// ═══════════════════════════════════════
+const CFG = {
+  APPS_SCRIPT_URL: '', // Pegar URL de Google Apps Script aquí
+  WHATSAPP: '50688346266',
+  OPEN_DAYS: [1,2,3,4,5,6], // Lun-Sáb (0=Dom)
+  HOUR_START: 9,
+  HOUR_END: 18,
+  INTERVAL: 30,
+};
+
+// ═══════════════════════════════════════
+// DATOS — Editá precios y servicios aquí
+// ═══════════════════════════════════════
+const SERVICES = [
+  // ── CABELLO ──
+  { id:'corte',         cat:'Cabello',    name:'Corte de cabello',          dur:45,  price:25000,                icon:'✂️',  desc:'Corte normal o especial adaptado a tu estilo y tipo de cabello' },
+  { id:'corte-hombre',  cat:'Cabello',    name:'Corte de hombre',           dur:30,  price:10000, priceMax:25000, icon:'💈',  desc:'Corte masculino normal o largo' },
+  { id:'corte-nino',    cat:'Cabello',    name:'Corte de niño',             dur:20,  price:10000,                icon:'👦',  desc:'Corte de cabello para niños' },
+  { id:'corte-nina',    cat:'Cabello',    name:'Corte de niña',             dur:25,  price:15000,                icon:'👧',  desc:'Corte de cabello para niñas' },
+  { id:'corte-bebe',    cat:'Cabello',    name:'Corte bebé',                dur:15,  price:10000,                icon:'🍼',  desc:'Corte de cabello para bebés' },
+  { id:'rapado',        cat:'Cabello',    name:'Corte rapado total',        dur:20,  price:10000,                icon:'🪒',  desc:'Rapado completo de cabeza' },
+  { id:'patilla-barba', cat:'Cabello',    name:'Patilla y barba',           dur:20,  price:5000,                 icon:'🧔',  desc:'Arreglo de patilla y barba' },
+  { id:'tinte-r',       cat:'Cabello',    name:'Tinte en raíces',           dur:90,  price:37100, priceMax:57200, icon:'🎨',  desc:'Aplicación de color en raíces. Varía según el largo del cabello' },
+  { id:'tinte-t',       cat:'Cabello',    name:'Tinte total',               dur:120, price:43800, priceMax:72000, icon:'🎨',  desc:'Coloración completa del cabello. Varía según el largo' },
+  { id:'bano-color',    cat:'Cabello',    name:'Baño de color',             dur:90,  price:31500, priceMax:47700, icon:'🪣',  desc:'Tonalización y brillo. Varía según el largo del cabello' },
+  { id:'highlights',    cat:'Cabello',    name:'Highlights / Mechas',       dur:180, price:79200, priceMax:121500,icon:'✨',  desc:'Babylights, morena iluminada, highlights con papel o gorra. Varía según largo y cobertura' },
+  { id:'balayage',      cat:'Cabello',    name:'Balayage',                  dur:210, price:86300, priceMax:159500,icon:'🌅',  desc:'Degradé natural estilo californiano. Varía según largo y abundancia' },
+  { id:'botox',         cat:'Cabello',    name:'Botox capilar',             dur:90,  price:25000, priceMax:35000, icon:'💆',  desc:'Hidratación y alisado suave. Varía según el largo del cabello' },
+  { id:'botox-hid',     cat:'Cabello',    name:'Botox hidratante',          dur:90,  price:15000, priceMax:39000, icon:'💧',  desc:'Hidratación profunda sin efecto alisante. Varía según el largo' },
+  { id:'nanoplastia',   cat:'Cabello',    name:'Nanoplastia Plex',          dur:210, price:40000, priceMax:80000, icon:'🧬',  desc:'Tratamiento alisado premium de larga duración. Varía según el largo' },
+  { id:'nanoplastia-r', cat:'Cabello',    name:'Nanoplastia Regular',       dur:210, price:77800, priceMax:130100,icon:'🔬',  desc:'Alisado con resultado natural duradero. Varía según largo y abundancia' },
+  { id:'keratina',      cat:'Cabello',    name:'Keratina',                  dur:210, price:64700, priceMax:134300,icon:'💎',  desc:'Tratamiento alisante premium de larga duración. Varía según largo y abundancia' },
+  { id:'tratamiento',   cat:'Cabello',    name:'Tratamiento capilar',       dur:60,  price:21800, priceMax:27800, icon:'🌿',  desc:'Morroccanoil, nutrición y recuperación del cabello. Varía según el largo' },
+  { id:'detox',         cat:'Cabello',    name:'Detox capilar',             dur:60,  price:30000,                icon:'🫧',  desc:'Limpieza y purificación profunda del cabello y cuero cabelludo' },
+  { id:'decoloracion',  cat:'Cabello',    name:'Decoloración total',        dur:120, price:40000, priceMax:120000,icon:'⚪',  desc:'Decoloración completa del cabello. Varía según el largo' },
+  { id:'lavado-plancha', cat:'Cabello',   name:'Lavado, secado y plancha',  dur:60,  price:15000,                icon:'💨',  desc:'Lavado + masaje capilar + secado y alisado' },
+  { id:'blower',        cat:'Cabello',    name:'Blower',                    dur:45,  price:12000,                icon:'💨',  desc:'Lavado y secado con difusor o brush' },
+  // ── UÑAS ──
+  { id:'mani-semi',     cat:'Uñas',       name:'Manicure SPA + semiperm.',  dur:60,  price:18000,                icon:'💅',  desc:'Manicure spa completo con esmalte semipermanente incluido' },
+  { id:'mani-trad',     cat:'Uñas',       name:'Manicure SPA + tradicional',dur:60,  price:13000,                icon:'💅',  desc:'Manicure spa completo con esmalte tradicional incluido' },
+  { id:'mani-spa',      cat:'Uñas',       name:'Manicure SPA (sin esmalte)',dur:45,  price:9000,                 icon:'🧖',  desc:'Manicure spa completo sin esmaltado final' },
+  { id:'pedi-semi',     cat:'Uñas',       name:'Pedicure SPA + semiperm.',  dur:75,  price:20000,                icon:'🦶',  desc:'Pedicure spa completo con esmalte semipermanente incluido' },
+  { id:'pedi-trad',     cat:'Uñas',       name:'Pedicure SPA + tradicional',dur:60,  price:15000,                icon:'🦶',  desc:'Pedicure spa completo con esmalte tradicional incluido' },
+  { id:'pedi-spa',      cat:'Uñas',       name:'Pedicure SPA (sin esmalte)',dur:45,  price:11000,                icon:'🛁',  desc:'Pedicure spa completo sin esmaltado final' },
+  { id:'semi-manos',    cat:'Uñas',       name:'Semipermanente manos',      dur:45,  price:13000,                icon:'💅',  desc:'Solo aplicación de esmalte semipermanente en manos' },
+  { id:'semi-pies',     cat:'Uñas',       name:'Semipermanente pies',       dur:45,  price:13000,                icon:'🦶',  desc:'Solo aplicación de esmalte semipermanente en pies' },
+  { id:'semi-mp',       cat:'Uñas',       name:'Semi manos + pies',         dur:90,  price:25000,                icon:'✨',  desc:'Semipermanente completo en manos y pies' },
+  { id:'gel-x',         cat:'Uñas',       name:'Gel X',                     dur:75,  price:18000,                icon:'💎',  desc:'Uñas en gel con esmaltado liso y acabado profesional' },
+  { id:'rubber',        cat:'Uñas',       name:'Rubber',                    dur:60,  price:15000,                icon:'🪩',  desc:'Base rubber para mayor duración y resistencia del esmalte' },
+  { id:'calcio',        cat:'Uñas',       name:'Calcio',                    dur:60,  price:15000,                icon:'🔮',  desc:'Fortalecimiento de uñas con calcio profesional' },
+  { id:'retiro-semi',   cat:'Uñas',       name:'Retiro semiperm. y Gel X',  dur:20,  price:3000,                 icon:'🧹',  desc:'Retiro de esmalte semipermanente o gel X' },
+  { id:'retiro-acrilico',cat:'Uñas',      name:'Retiro acrílico',           dur:20,  price:4000,                 icon:'🧽',  desc:'Retiro de uñas acrílicas' },
+  { id:'efecto-deco',   cat:'Uñas',       name:'Efecto y decoración',       dur:15,  price:2000,                 icon:'🎨',  desc:'Efectos especiales y decoración de uñas (por uña)' },
+  { id:'reposicion',    cat:'Uñas',       name:'Reposición de uña',         dur:15,  price:2000,                 icon:'🔧',  desc:'Reposición de una uña' },
+  { id:'ampolla',       cat:'Uñas',       name:'Ampolla manicure/pedicure', dur:10,  price:1000,                 icon:'💊',  desc:'Ampolla de tratamiento para manicure o pedicure' },
+  // ── PEINADO ──
+  { id:'ondas',         cat:'Peinado',    name:'Ondas',                     dur:60,  price:15000, priceMax:35000, icon:'🌊',  desc:'Ondas naturales en cabello corto, mediano, largo o extra largo' },
+  { id:'recogido-b',    cat:'Peinado',    name:'Recogido básico',           dur:60,  price:35000,                icon:'🪢',  desc:'Recogido clásico y elegante para cualquier ocasión' },
+  { id:'recogido-e',    cat:'Peinado',    name:'Recogido especial',         dur:75,  price:40000,                icon:'👑',  desc:'Recogido elaborado con detalles y acabados especiales' },
+  { id:'peinado-social', cat:'Peinado',   name:'Peinado social',            dur:60,  price:25000,                icon:'🎉',  desc:'Peinado para eventos sociales, fiestas y celebraciones' },
+  { id:'peinado-novia', cat:'Peinado',    name:'Peinado de novia',          dur:120, price:75000,                icon:'💒',  desc:'Peinado nupcial completo para tu día especial' },
+  { id:'lavado-plancha2',cat:'Peinado',   name:'Lavado, secado y plancha',  dur:60,  price:15000,                icon:'💨',  desc:'Lavado + masaje capilar + secado y alisado' },
+  { id:'blower2',       cat:'Peinado',    name:'Blower',                    dur:45,  price:12000,                icon:'💨',  desc:'Lavado y secado con difusor o brush' },
+  // ── MAQUILLAJE ──
+  { id:'maq-social',    cat:'Maquillaje', name:'Maquillaje social',         dur:60,  price:25000,                icon:'💄',  desc:'Maquillaje para eventos sociales, salidas y celebraciones' },
+  { id:'maq-grad',      cat:'Maquillaje', name:'Maquillaje graduación',     dur:75,  price:35000,                icon:'🎓',  desc:'Maquillaje especial para ceremonias de graduación' },
+  { id:'maq-novia',     cat:'Maquillaje', name:'Maquillaje de novia',       dur:120, price:75000,                icon:'👰',  desc:'Maquillaje nupcial completo para tu día más especial' },
+];
+
+const EMPLOYEES = [
+  { id:'any',    name:'Sin preferencia', role:'Primer disponible', av:'✦',   any:true },
+  { id:'marta',  name:'Marta',           role:'Estilista',         av:'MA',  cats:['Cabello','Peinado','Maquillaje'] },
+  { id:'difrani',name:'Difrani',          role:'Estilista',         av:'DI',  cats:['Cabello','Peinado','Maquillaje'] },
+  { id:'tatiana',name:'Tatiana',          role:'Manicurista',       av:'TA',  cats:['Uñas'] },
+  { id:'alisson',name:'Alisson',          role:'Estilista',         av:'AL',  cats:['Cabello','Peinado','Maquillaje'] },
+];
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let S = {
+  step: 1, goBack: false,
+  service: null, employee: null, date: null, time: null, client: {},
+  activeCat: null, calY: new Date().getFullYear(), calM: new Date().getMonth(),
+};
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  buildSvcs();
+  buildEmps();
+  buildCal();
+  syncNav();
+});
+
+// ═══════════════════════════════════════
+// STEP 1 — SERVICES
+// ═══════════════════════════════════════
+function buildSvcs() {
+  const cats = [...new Set(SERVICES.map(s => s.cat))];
+  S.activeCat = S.activeCat || cats[0];
+  document.getElementById('catTabs').innerHTML = cats.map(c =>
+    `<button class="cat-tab ${c===S.activeCat?'active':''}" onclick="setCat('${c}')">${c}</button>`
+  ).join('');
+  renderSvcs();
+}
+
+function setCat(c) {
+  S.activeCat = c;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.toggle('active', t.textContent===c));
+  renderSvcs();
+}
+
+function fmtPrice(s) {
+  if (s.priceMax) {
+    return `<span class="svc-price">Desde ₡${s.price.toLocaleString()}<span class="svc-price-from">hasta ₡${s.priceMax.toLocaleString()}</span></span>`;
+  }
+  return `<span class="svc-price">₡${s.price.toLocaleString()}</span>`;
+}
+
+function renderSvcs() {
+  document.getElementById('svcGrid').innerHTML = SERVICES
+    .filter(s => s.cat === S.activeCat)
+    .map(s => `
+      <div class="svc-card ${S.service?.id===s.id?'sel':''}" onclick="pickSvc('${s.id}',this)">
+        <div class="svc-name">${s.name}</div>
+        <div class="svc-desc">${s.desc}</div>
+        <div class="svc-foot">
+          <span class="svc-dur">⏱ ${fmtDur(s.dur)}</span>
+          ${fmtPrice(s)}
+        </div>
+      </div>`
+    ).join('');
+}
+
+function pickSvc(id, el) {
+  S.service = SERVICES.find(s => s.id === id);
+  document.querySelectorAll('.svc-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  syncNav();
+}
+
+// ═══════════════════════════════════════
+// STEP 2 — EMPLOYEES
+// ═══════════════════════════════════════
+function buildEmps() {
+  const cat = S.service?.cat;
+  const available = EMPLOYEES.filter(e => {
+    if (e.any) return true;
+    return !cat || !e.cats || e.cats.includes(cat);
+  });
+  // Ocultar "Sin preferencia" si solo hay una especialista disponible
+  const specialists = available.filter(e => !e.any);
+  const showAny = specialists.length > 1;
+  const list = available.filter(e => e.any ? showAny : true);
+
+  document.getElementById('empGrid').innerHTML = list.map(e => `
+    <div class="emp-card ${e.any?'any':''} ${S.employee?.id===e.id?'sel':''}" onclick="pickEmp('${e.id}',this)">
+      <div class="emp-avatar ${e.any?'emp-any-av':''}">${e.av}</div>
+      <div class="emp-name">${e.name}</div>
+      <div class="emp-role">${e.role}</div>
+    </div>`
+  ).join('');
+}
+
+function pickEmp(id, el) {
+  S.employee = EMPLOYEES.find(e => e.id === id);
+  document.querySelectorAll('.emp-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  syncNav();
+}
+
+// ═══════════════════════════════════════
+// STEP 3 — CALENDAR
+// ═══════════════════════════════════════
+const MONTHS_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS_ES = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const MONTHS_ES_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+function buildCal() {
+  const { calY:y, calM:m } = S;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const first = new Date(y, m, 1);
+  const last  = new Date(y, m+1, 0);
+
+  document.getElementById('calLabel').textContent = `${MONTHS_ES[m]} ${y}`;
+
+  let html = '';
+  for (let i = 0; i < first.getDay(); i++) html += '<div class="cal-d empty"></div>';
+
+  for (let d = 1; d <= last.getDate(); d++) {
+    const dt = new Date(y, m, d);
+    const past    = dt < today;
+    const sunday  = dt.getDay() === 0;
+    const isToday = dt.toDateString() === today.toDateString();
+    const isSel   = S.date && dt.toDateString() === S.date.toDateString();
+    const cls = [past?'past':'', sunday?'sunday':'', isToday&&!isSel?'today':'', isSel?'sel':''].filter(Boolean).join(' ');
+    const cb  = (!past && !sunday) ? `onclick="pickDate(${y},${m},${d})"` : '';
+    html += `<div class="cal-d ${cls}" ${cb}>${d}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+
+  document.getElementById('calPrev').onclick = () => {
+    if (--S.calM < 0) { S.calM = 11; S.calY--; }
+    buildCal();
+  };
+  document.getElementById('calNext').onclick = () => {
+    if (++S.calM > 11) { S.calM = 0; S.calY++; }
+    buildCal();
+  };
+}
+
+function pickDate(y, m, d) {
+  S.date = new Date(y, m, d);
+  S.time = null; // reset time when date changes
+  buildCal();
+  syncNav();
+}
+
+// ═══════════════════════════════════════
+// STEP 4 — TIME SLOTS
+// ═══════════════════════════════════════
+function buildSlots() {
+  if (!S.date || !S.service) return;
+  const dow = DAYS_ES[S.date.getDay()];
+  const dateStr = `${dow} ${S.date.getDate()} de ${MONTHS_ES_SHORT[S.date.getMonth()]}`;
+  document.getElementById('step4Sub').textContent = `Disponibilidad para el ${dateStr}`;
+  document.getElementById('slotSvcName').textContent = S.service.name;
+  document.getElementById('slotDur').textContent = fmtDur(S.service.dur);
+
+  const bookings = getStoredBookings();
+  const dstr = S.date.toDateString();
+  const empId = S.employee?.id !== 'any' ? S.employee?.id : null;
+
+  const dayBookings = bookings.filter(b =>
+    b.date === dstr && (!empId || b.empId === empId)
+  );
+
+  const start = CFG.HOUR_START * 60;
+  const end   = CFG.HOUR_END   * 60;
+  const dur   = S.service.dur;
+
+  let html = '';
+  for (let t = start; t <= end - dur; t += CFG.INTERVAL) {
+    const h = Math.floor(t/60).toString().padStart(2,'0');
+    const min = (t%60).toString().padStart(2,'0');
+    const ts = `${h}:${min}`;
+    const taken = dayBookings.some(b => {
+      const bs = t2m(b.time), be = bs + b.duration;
+      return t < be && t + dur > bs;
+    });
+    const isSel = S.time === ts;
+    html += `<div class="slot ${taken?'taken':''} ${isSel?'sel':''}"
+      ${!taken ? `onclick="pickSlot('${ts}',this)"` : ''}>${ts}</div>`;
+  }
+  document.getElementById('slotsGrid').innerHTML = html ||
+    '<p style="color:var(--muted);grid-column:1/-1">No hay horarios disponibles.</p>';
+}
+
+function pickSlot(ts, el) {
+  S.time = ts;
+  document.querySelectorAll('.slot').forEach(s => s.classList.remove('sel'));
+  el.classList.add('sel');
+  syncNav();
+}
+
+// ═══════════════════════════════════════
+// STEP 5 — SUMMARY & CONTACT
+// ═══════════════════════════════════════
+function buildSummary() {
+  const dow = DAYS_ES[S.date.getDay()];
+  const dateStr = `${capitalize(dow)} ${S.date.getDate()} de ${MONTHS_ES_SHORT[S.date.getMonth()]}`;
+  document.getElementById('summaryRows').innerHTML = `
+    <div class="summary-row"><span class="summary-ico">${S.service.icon}</span><div>
+      <div class="summary-lbl">Servicio</div>
+      <div class="summary-val">${S.service.name}</div></div></div>
+    <div class="summary-row"><span class="summary-ico">👤</span><div>
+      <div class="summary-lbl">Especialista</div>
+      <div class="summary-val">${S.employee.id==='any'?'Sin preferencia':S.employee.name}</div></div></div>
+    <div class="summary-row"><span class="summary-ico">📅</span><div>
+      <div class="summary-lbl">Fecha y hora</div>
+      <div class="summary-val">${dateStr} · ${S.time}</div></div></div>
+    <div class="summary-row"><span class="summary-ico">💰</span><div>
+      <div class="summary-lbl">Precio estimado</div>
+      <div class="summary-val">₡${S.service.price.toLocaleString()}</div></div></div>`;
+}
+
+function formOk() {
+  return document.getElementById('fName')?.value.trim().length > 1
+      && document.getElementById('fPhone')?.value.trim().length > 5;
+}
+
+// ═══════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════
+async function submitBooking() {
+  const name  = document.getElementById('fName').value.trim();
+  const phone = document.getElementById('fPhone').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  const notes = document.getElementById('fNotes').value.trim();
+
+  const booking = {
+    id: Date.now().toString(),
+    date: S.date.toDateString(),
+    time: S.time,
+    duration: S.service.dur,
+    svcId: S.service.id,
+    svcName: S.service.name,
+    svcPrice: S.service.price,
+    svcIcon: S.service.icon,
+    empId: S.employee.id,
+    empName: S.employee.id === 'any' ? 'Sin preferencia' : S.employee.name,
+    clientName: name, clientPhone: phone, clientEmail: email, clientNotes: notes,
+    createdAt: new Date().toISOString(),
+    status: 'confirmada',
+  };
+
+  storeBooking(booking);
+
+  if (CFG.APPS_SCRIPT_URL) {
+    try {
+      fetch(CFG.APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(booking) });
+    } catch(e) { /* Google Calendar sync failed silently */ }
+  }
+
+  buildConfirmation(booking);
+  goToStep(6);
+}
+
+function buildConfirmation(b) {
+  const dow = DAYS_ES[S.date.getDay()];
+  const dateStr = `${capitalize(dow)} ${S.date.getDate()} de ${MONTHS_ES_SHORT[S.date.getMonth()]} · ${b.time}`;
+
+  document.getElementById('confirmDetails').innerHTML = `
+    <div class="confirm-detail-row"><span class="confirm-detail-ico">${b.svcIcon}</span><div>
+      <div class="confirm-detail-label">Servicio</div>
+      <div class="confirm-detail-val">${b.svcName}</div></div></div>
+    <div class="confirm-detail-row"><span class="confirm-detail-ico">📅</span><div>
+      <div class="confirm-detail-label">Fecha</div>
+      <div class="confirm-detail-val" style="text-transform:capitalize">${dateStr}</div></div></div>
+    ${b.empId!=='any'?`<div class="confirm-detail-row"><span class="confirm-detail-ico">👤</span><div>
+      <div class="confirm-detail-label">Especialista</div>
+      <div class="confirm-detail-val">${b.empName}</div></div></div>`:''}
+    <div class="confirm-total">
+      <span>Total estimado</span>
+      <span>₡${b.svcPrice.toLocaleString()}</span>
+    </div>`;
+
+  const msg = encodeURIComponent(
+    `Hola Mon Ciel Studio! 👋\n\nReservé una cita:\n\n`+
+    `${b.svcIcon} *${b.svcName}*\n📅 ${dateStr}\n`+
+    `${b.empId!=='any'?`👤 ${b.empName}\n`:''}\n`+
+    `Mi nombre es ${b.clientName}. ¡Nos vemos pronto! ✨`
+  );
+  document.getElementById('btnWa').href = `https://wa.me/${CFG.WHATSAPP}?text=${msg}`;
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function goNext() {
+  if (S.step === 5) { submitBooking(); return; }
+  goToStep(S.step + 1);
+}
+
+function goBack() {
+  S.goBack = true;
+  goToStep(S.step - 1);
+}
+
+function goToStep(n) {
+  const prev = document.getElementById(`step${S.step}`);
+  prev.classList.remove('active', 'back');
+  S.step = n;
+  const next = document.getElementById(`step${n}`);
+  next.classList.remove('active', 'back');
+  if (S.goBack) next.classList.add('back');
+  S.goBack = false;
+  next.classList.add('active');
+
+  if (n === 2) buildEmps();
+  if (n === 3) buildCal();
+  if (n === 4) buildSlots();
+  if (n === 5) buildSummary();
+
+  window.scrollTo({ top:0, behavior:'smooth' });
+  syncNav();
+  syncProgress();
+}
+
+function syncNav() {
+  const n = S.step;
+  document.getElementById('btnBack').hidden = n <= 1;
+  document.getElementById('bkNav').style.display = n === 6 ? 'none' : 'flex';
+  document.getElementById('stepCtr').textContent = n < 6 ? `Paso ${n} de 5` : '';
+
+  const ok = (n===1 && S.service) || (n===2 && S.employee) ||
+             (n===3 && S.date)    || (n===4 && S.time)     || (n===5 && formOk());
+
+  const btn = document.getElementById('btnNext');
+  btn.disabled = !ok;
+  btn.textContent = n === 5 ? 'Confirmar reserva ✓' : 'Continuar →';
+  btn.className = `btn-next ${n === 5 ? 'gold' : 'dark'}`;
+
+  if (n === 5) {
+    ['fName','fPhone'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.oninput = syncNav;
+    });
+  }
+}
+
+function syncProgress() {
+  const n = S.step;
+  document.getElementById('bkProgress').style.display = n === 6 ? 'none' : 'block';
+  document.querySelectorAll('.sbar-item').forEach(el => {
+    const s = +el.dataset.s;
+    el.classList.remove('active','done');
+    if (s === n) el.classList.add('active');
+    if (s < n)  el.classList.add('done');
+  });
+}
+
+// ═══════════════════════════════════════
+// LOCAL STORAGE
+// ═══════════════════════════════════════
+function getStoredBookings() {
+  try { return JSON.parse(localStorage.getItem('mc_bookings') || '[]'); } catch { return []; }
+}
+function storeBooking(b) {
+  const all = getStoredBookings(); all.push(b);
+  localStorage.setItem('mc_bookings', JSON.stringify(all));
+}
+
+// ═══════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════
+function fmtDur(m) {
+  const h = Math.floor(m/60), mn = m%60;
+  return h ? (mn ? `${h}h ${mn}min` : `${h}h`) : `${m} min`;
+}
+function t2m(ts) { const [h,m] = ts.split(':').map(Number); return h*60+m; }
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+</script>
+</body>
+</html>

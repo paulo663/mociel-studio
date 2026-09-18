@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mon Ciel Studio — Cabellos con alma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css?v=2"/>
+</head>
+<body>
+
+  <!-- FLOATING WHATSAPP -->
+  <a href="https://wa.me/50688346266" target="_blank" class="float-wa" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    <span class="float-wa-pulse"></span>
+  </a>
+
+  <!-- NAV -->
+  <header id="header">
+    <nav class="nav container">
+      <a href="#inicio" class="nav-logo">
+        <img src="logo.png" alt="Mon Ciel Studio" class="nav-logo-img" style="height:64px;width:180px;object-fit:contain;display:block;filter:invert(1)">
+      </a>
+      <ul class="nav-links">
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#galeria">Galería</a></li>
+        <li><a href="booking.html" class="btn-nav">Agendar cita</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#nosotros" class="mobile-link">Nosotros</a>
+      <a href="#servicios" class="mobile-link">Servicios</a>
+      <a href="#galeria" class="mobile-link">Galería</a>
+      <a href="booking.html" class="mobile-link highlight">Agendar cita</a>
+      <a href="#contacto" class="mobile-link">Contacto</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="inicio" class="hero">
+    <canvas id="petalCanvas"></canvas>
+    <div class="hero-overlay"></div>
+    <div class="hero-content container" data-parallax="0.3">
+      <img src="logo.png" alt="Mon Ciel Studio" class="reveal-up" style="width:min(420px,85vw);height:auto;display:block;margin:0 auto 1.5rem;filter:invert(1);--delay:.05s">
+
+    </div>
+    <div class="hero-scroll"><span></span></div>
+    <!-- Decorative circles -->
+    <div class="hero-deco deco-1"></div>
+    <div class="hero-deco deco-2"></div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-bar">
+    <div class="container stats-grid">
+      <div class="stat-item reveal-up">
+        <p>Clientes satisfechos</p>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item reveal-up" style="--delay:.1s">
+        <p>Marcas profesionales</p>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item reveal-up" style="--delay:.2s">
+        <p>Servicios de calidad</p>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item reveal-up" style="--delay:.3s">
+        <p>Atención personalizada</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOSOTROS -->
+  <section id="nosotros" class="section about">
+    <div class="container about-grid">
+      <div class="about-visuals reveal-left">
+        <div class="about-img-main">
+          <div class="img-placeholder main-img">
+            <div class="img-inner">
+              <span class="img-icon">✦</span>
+              <p>Mon Ciel</p>
+              <p class="img-sub">Cabellos con alma</p>
+            </div>
+          </div>
+        </div>
+        <div class="about-img-side">
+          <div class="img-placeholder side-img1">
+            <div class="img-inner"><span>💆</span><p>Tratamientos</p></div>
+          </div>
+          <div class="img-placeholder side-img2">
+            <div class="img-inner"><span>💅</span><p>Manicure</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="about-text reveal-right">
+        <span class="section-tag">Nuestra historia</span>
+        <h2 class="section-title">Belleza y bienestar<br><em>van de la mano</em></h2>
+        <p>Mon Ciel Studio es un centro de belleza integral, enfocado en brindarte una atención personalizada y servicios de calidad en el área de cabello, uñas, manos, pies, estética y más.</p>
+        <p>Nuestros productos de alta calidad y equipo de colaboradores, crearán una experiencia inigualable; brindándote una sensación de bienestar integral.</p>
+        <a href="https://wa.me/50688346266?text=Hola%20Mon%20Ciel!%20Me%20gustar%C3%ADa%20reservar%20una%20cita.%20%C2%BFTienen%20disponibilidad%3F" target="_blank" class="btn btn-primary" style="margin-top:1.5rem">Reserva tu experiencia</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="quote-section">
+    <div class="container">
+      <div class="quote-wrap reveal-up">
+        <span class="quote-mark">"</span>
+        <blockquote>En Mon Ciel, no solo transformamos tu cabello —<br><em>transformamos cómo te sientes</em></blockquote>
+        <span class="quote-author">— Mon Ciel Studio</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section id="servicios" class="section services">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="section-tag">Lo que ofrecemos</span>
+        <h2 class="section-title">Nuestros servicios</h2>
+        <p class="section-desc">Cada servicio está diseñado para brindarte una experiencia premium, cuidando cada detalle.</p>
+      </div>
+      <div class="services-grid">
+
+        <div class="service-card reveal-up" style="--delay:0s" data-service="Corte de cabello">
+          <div class="service-card-inner">
+            <div class="service-front">
+              <div class="service-icon-wrap" style="--ic:#5A7492">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" stroke-linecap="round"><circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><line x1="8.2" y1="8.2" x2="21" y2="21"/><line x1="8.2" y1="15.8" x2="21" y2="3"/></svg>
+              </div>
+              <h3>Corte de cabello</h3>
+              <p>Cortes personalizados adaptados a tu estilo y tipo de cabello.</p>
+              <span class="service-hover-hint">Ver más</span>
+            </div>
+            <div class="service-back" style="--bc:#5A7492">
+              <h3>Corte de cabello</h3>
+              <ul>
+                <li>Corte clásico</li>
+                <li>Corte con capas</li>
+                <li>Desmechado</li>
+                <li>Puntas y retoque</li>
+              </ul>
+              <a href="booking.html" class="btn btn-white">Reservar cita →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-card reveal-up" style="--delay:.07s" data-service="Coloración">
+          <div class="service-card-inner">
+            <div class="service-front">
+              <div class="service-icon-wrap" style="--ic:#C9943A">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3L21 6L9.5 17.5C8.5 18.5 7 18.5 6 17.5C5 16.5 5 15 6 14L17.5 2.5"/><path d="M6 17.5C5.5 18.2 5 19.5 4.5 21C6 20.5 7.3 20 8 19.3"/><line x1="14" y1="6" x2="17" y2="9"/></svg>
+              </div>
+              <h3>Coloración</h3>
+              <p>Coloración profesional, mechas y balayage con marcas premium.</p>
+              <span class="service-hover-hint">Ver más</span>
+            </div>
+            <div class="service-back" style="--bc:#C9943A">
+              <h3>Coloración</h3>
+              <ul>
+                <li>Color completo</li>
+                <li>Balayage</li>
+                <li>Mechas</li>
+                <li>Decoloración</li>
+              </ul>
+              <a href="booking.html" class="btn btn-white">Reservar cita →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-card featured reveal-up" style="--delay:.14s" data-service="Tratamiento capilar">
+          <div class="service-badge">⭐ Popular</div>
+          <div class="service-card-inner">
+            <div class="service-front">
+              <div class="service-icon-wrap" style="--ic:#7B90A8">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" stroke-linecap="round"><path d="M12 3C12 3 7 10 7 15C7 18.3 9.2 21 12 21C14.8 21 17 18.3 17 15C17 10 12 3 12 3Z"/><path d="M10 15C10 13.2 11 11.5 12.5 11"/><path d="M19 5L20.5 3.5M21 9H23M19 13L20.5 14.5"/></svg>
+              </div>
+              <h3>Tratamiento capilar</h3>
+              <p>Hidratación, nutrición y recuperación para devolverle vida a tu cabello.</p>
+              <span class="service-hover-hint">Ver más</span>
+            </div>
+            <div class="service-back" style="--bc:#7B90A8">
+              <h3>Tratamiento capilar</h3>
+              <ul>
+                <li>Hidratación profunda</li>
+                <li>Keratina</li>
+                <li>Reconstrucción</li>
+                <li>Nutrición capilar</li>
+              </ul>
+              <a href="booking.html" class="btn btn-white">Reservar cita →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-card reveal-up" style="--delay:.21s" data-service="Lavado y peinado">
+          <div class="service-card-inner">
+            <div class="service-front">
+              <div class="service-icon-wrap" style="--ic:#5A7492">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" stroke-linecap="round"><rect x="3" y="5" width="18" height="5" rx="1.5"/><line x1="6" y1="10" x2="6" y2="19"/><line x1="9" y1="10" x2="9" y2="19"/><line x1="12" y1="10" x2="12" y2="19"/><line x1="15" y1="10" x2="15" y2="19"/><line x1="18" y1="10" x2="18" y2="19"/></svg>
+              </div>
+              <h3>Lavado y peinado</h3>
+              <p>Lavado profesional con masaje capilar y secado a tu gusto.</p>
+              <span class="service-hover-hint">Ver más</span>
+            </div>
+            <div class="service-back" style="--bc:#5A7492">
+              <h3>Lavado y peinado</h3>
+              <ul>
+                <li>Lavado + masaje</li>
+                <li>Secado lacio</li>
+                <li>Ondas naturales</li>
+                <li>Peinado de evento</li>
+              </ul>
+              <a href="booking.html" class="btn btn-white">Reservar cita →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-card reveal-up" style="--delay:.28s" data-service="Manicure">
+          <div class="service-card-inner">
+            <div class="service-front">
+              <div class="service-icon-wrap" style="--ic:#B0C3D6">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" stroke-linecap="round"><rect x="8" y="9" width="8" height="13" rx="2"/><path d="M10 9V6.5C10 5.7 10.9 5 12 5C13.1 5 14 5.7 14 6.5V9"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="11" y1="5" x2="13" y2="5"/></svg>
+              </div>
+              <h3>Manicure</h3>
+              <p>Manicure clásico, semipermanente y nail art en ambiente relajante.</p>
+              <span class="service-hover-hint">Ver más</span>
+            </div>
+            <div class="service-back" style="--bc:#B0C3D6">
+              <h3>Manicure</h3>
+              <ul>
+                <li>Manicure clásico</li>
+                <li>Semipermanente</li>
+                <li>Nail art</li>
+                <li>Acrílico/Gel</li>
+              </ul>
+              <a href="booking.html" class="btn btn-white">Reservar cita →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="service-card reveal-up" style="--delay:.35s" data-service="Pedicure">
+          <div class="service-card-inner">
+            <div class="service-front">
+              <div class="service-icon-wrap" style="--ic:#7B90A8">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21C6 21 5 13 5 9C5 6.2 7.2 4 10 4C12.8 4 15 6.2 15 9V12"/><path d="M15 12H18C19.7 12 21 13.3 21 15V18C21 19.7 19.7 21 18 21H6"/><circle cx="9" cy="3" r="1"/><circle cx="13" cy="3" r="1"/><circle cx="16.5" cy="5" r="1"/><circle cx="19" cy="8.5" r="1"/></svg>
+              </div>
+              <h3>Pedicure</h3>
+              <p>Pedicure completo con tratamiento de pies para tu bienestar integral.</p>
+              <span class="service-hover-hint">Ver más</span>
+            </div>
+            <div class="service-back" style="--bc:#7B90A8">
+              <h3>Pedicure</h3>
+              <ul>
+                <li>Pedicure clásico</li>
+                <li>Spa pedicure</li>
+                <li>Semipermanente</li>
+                <li>Tratamiento pies</li>
+              </ul>
+              <a href="booking.html" class="btn btn-white">Reservar cita →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERIA -->
+  <section id="galeria" class="section gallery">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="section-tag">Nuestro trabajo</span>
+        <h2 class="section-title">Transformaciones</h2>
+        <p class="section-desc">Cada resultado es una obra de arte hecha con pasión y dedicación.</p>
+      </div>
+      <div class="gallery-filters reveal-up" style="--delay:.1s">
+        <button class="filter-btn active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="cabello">Cabello</button>
+        <button class="filter-btn" data-filter="color">Color</button>
+        <button class="filter-btn" data-filter="unas">Uñas</button>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item tall reveal-up" data-cat="cabello" style="--delay:0s">
+          <div class="gal-img" style="background:linear-gradient(160deg,#6B7FA3,#9B7B82)">
+            <div class="gal-overlay"><span>✦</span><p>Corte &amp; Estilo</p></div>
+          </div>
+        </div>
+        <div class="gallery-item reveal-up" data-cat="color" style="--delay:.07s">
+          <div class="gal-img" style="background:linear-gradient(160deg,#C9943A,#E8A5C0)">
+            <div class="gal-overlay"><span>✦</span><p>Coloración</p></div>
+          </div>
+        </div>
+        <div class="gallery-item reveal-up" data-cat="unas" style="--delay:.14s">
+          <div class="gal-img" style="background:linear-gradient(160deg,#E8A5C0,#C4B5A5)">
+            <div class="gal-overlay"><span>✦</span><p>Nail Art</p></div>
+          </div>
+        </div>
+        <div class="gallery-item wide reveal-up" data-cat="cabello" style="--delay:.21s">
+          <div class="gal-img" style="background:linear-gradient(160deg,#9B7B82,#6B7FA3)">
+            <div class="gal-overlay"><span>✦</span><p>Tratamiento Capilar</p></div>
+          </div>
+        </div>
+        <div class="gallery-item reveal-up" data-cat="color" style="--delay:.28s">
+          <div class="gal-img" style="background:linear-gradient(160deg,#C4B5A5,#C9943A)">
+            <div class="gal-overlay"><span>✦</span><p>Balayage</p></div>
+          </div>
+        </div>
+        <div class="gallery-item tall reveal-up" data-cat="unas" style="--delay:.35s">
+          <div class="gal-img" style="background:linear-gradient(160deg,#E8A5C0,#9B7B82)">
+            <div class="gal-overlay"><span>✦</span><p>Manicure</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section class="section testimonials">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <span class="section-tag">Lo que dicen</span>
+        <h2 class="section-title">Nuestras clientas</h2>
+      </div>
+      <div class="testi-track-wrap reveal-up" style="--delay:.1s">
+        <div class="testi-track" id="testiTrack">
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p>"El mejor salón que he visitado en Heredia. El ambiente es increíble, se siente como estar en París. Mi cabello quedó perfecto y me trataron con tanto cariño."</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="--c:#E8A5C0">M</div>
+              <div><strong>María Fernández</strong><span>Cliente habitual</span></div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p>"Vine por un balayage y quedé enamorada del resultado. La atención es personalizada, te escuchan y te dan exactamente lo que quieres. 100% recomendado."</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="--c:#6B7FA3">A</div>
+              <div><strong>Andrea Solano</strong><span>Nueva clienta</span></div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p>"El tratamiento capilar que me hicieron fue transformador. Mi cabello estaba muy dañado y después de la sesión lo sentí como nuevo. El equipo es súper profesional."</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="--c:#C9943A">L</div>
+              <div><strong>Laura Jiménez</strong><span>3 años siendo clienta</span></div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p>"El manicure semipermanente duró más de 3 semanas en perfecto estado. El área de espera es muy cómoda y el olor a lavanda te relaja desde que entras."</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="--c:#9B7B82">V</div>
+              <div><strong>Valeria Mora</strong><span>Cliente frecuente</span></div>
+            </div>
+          </div>
+          <div class="testi-card">
+            <div class="testi-stars">★★★★★</div>
+            <p>"Vine con mi mamá y las dos quedamos felices. Nos atendieron al mismo tiempo, el espacio es hermoso y los precios son muy accesibles para la calidad que dan."</p>
+            <div class="testi-author">
+              <div class="testi-avatar" style="--c:#6B7FA3">S</div>
+              <div><strong>Sofía Ramírez</strong><span>Recomendada por amigas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-dots" id="testiDots"></div>
+        <div class="testi-nav">
+          <button class="testi-btn" id="testiPrev">←</button>
+          <button class="testi-btn" id="testiNext">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="section contact">
+    <div class="container contact-grid">
+      <div class="contact-info reveal-left">
+        <span class="section-tag">Encuéntranos</span>
+        <h2 class="section-title">Visítanos</h2>
+        <div class="contact-item">
+          <span class="contact-icon">📍</span>
+          <div><strong>Dirección</strong><p>Local H103, Condominio Santa Verde<br>Del CENADA 500 m este, 1 km norte<br>La Aurora, San Francisco, Heredia</p></div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">📞</span>
+          <div><strong>Teléfono</strong><p><a href="tel:+50688346266">8834-6266</a></p></div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">✉</span>
+          <div><strong>Correo</strong><p><a href="mailto:facturacion@salonmonciel.com">facturacion@salonmonciel.com</a></p></div>
+        </div>
+        <div class="social-links">
+          <a href="https://www.instagram.com/moncielsalon?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="social-btn" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/moncielsaloncr" target="_blank" class="social-btn" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://www.tiktok.com/@moncielsalon?is_from_webapp=1&sender_device=pc" target="_blank" class="social-btn" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+          </a>
+          <a href="https://wa.me/50688346266" target="_blank" class="social-btn" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="map-wrap reveal-right">
+        <a href="https://waze.com/ul/hd1u0v4sgb" target="_blank" class="map-placeholder">
+          <div class="map-inner">
+            <span class="map-pin">📍</span>
+            <p><strong>Mon Ciel Studio</strong></p>
+            <p>Local H103, Condominio Santa Verde<br>Heredia, Costa Rica</p>
+            <span class="map-cta">Abrir en Waze →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESERVAR CTA -->
+  <section id="cita" style="background:var(--dark);padding:5rem 1.5rem;text-align:center">
+    <div style="max-width:600px;margin:0 auto">
+      <span style="font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:1rem">Agenda en línea</span>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:300;color:#fff;line-height:1.2;margin-bottom:1rem">Reserva tu cita<br><em style="font-style:italic;color:var(--sand)">en segundos</em></h2>
+      <p style="color:rgba(255,255,255,.45);font-size:.95rem;line-height:1.7;margin-bottom:2.25rem;max-width:420px;margin-left:auto;margin-right:auto">Elige tu servicio, especialista y horario preferido. Sin llamadas, sin esperas. Tu cita queda confirmada al instante.</p>
+      <a href="booking.html" style="display:inline-flex;align-items:center;gap:.6rem;background:var(--gold);color:#fff;padding:.95rem 2.25rem;border-radius:100px;text-decoration:none;font-weight:600;font-size:.95rem;letter-spacing:.02em;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        Reservar mi cita →
+      </a>
+      <div style="display:flex;align-items:center;justify-content:center;gap:2rem;margin-top:2.5rem;flex-wrap:wrap">
+        <div style="text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:.25rem">✂️</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase">Cabello</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:.25rem">💅</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase">Uñas</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:.25rem">🌸</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase">Estética</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:.25rem">📅</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase">Lun – Sáb</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">
+        <img src="logo.png" alt="Mon Ciel Studio" style="height:48px;width:160px;object-fit:contain;display:block;margin-bottom:.5rem;filter:invert(1)">
+        <p>Cabellos con alma · Heredia, Costa Rica</p>
+      </div>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/moncielsalon?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">Instagram</a>
+        <a href="https://www.facebook.com/moncielsaloncr" target="_blank">Facebook</a>
+        <a href="https://www.tiktok.com/@moncielsalon?is_from_webapp=1&sender_device=pc" target="_blank">TikTok</a>
+        <a href="https://wa.me/50688346266" target="_blank">WhatsApp</a>
+      </div>
+      <p class="footer-copy">© 2026 Mon Ciel Studio · Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:1rem">
+    <button id="lbClose" style="position:absolute;top:1rem;right:1.2rem;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1;opacity:.8">✕</button>
+    <button id="lbPrev" style="position:absolute;left:.8rem;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.6rem;cursor:pointer;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center">‹</button>
+    <button id="lbNext" style="position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.6rem;cursor:pointer;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center">›</button>
+    <div style="display:flex;flex-direction:column;align-items:center;max-width:min(90vw,900px);max-height:90vh;gap:.75rem">
+      <img id="lbImg" src="" alt="" style="max-width:100%;max-height:calc(90vh - 3rem);object-fit:contain;border-radius:8px;display:block"/>
+      <p id="lbLabel" style="color:rgba(255,255,255,.75);font-family:'Jost',sans-serif;font-weight:300;font-size:.9rem;letter-spacing:.06em;margin:0"></p>
+    </div>
+  </div>
+
+  <script src="gallery-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

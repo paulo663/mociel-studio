@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Mon Ciel Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --polar: #E8EDF4; --sand: #A8BAC8; --cambridge: #7B90A8;
+      --blue: #5A7492; --dark: #1E2A35; --gold: #C9943A;
+      --white: #fff; --off: #F3F6F9; --text: #2A3542; --muted: #6E80A0;
+      --green: #27AE60; --red: #E74C3C; --orange: #E67E22;
+    }
+    html { font-size: 15px; }
+    body { font-family: 'Jost', sans-serif; background: var(--off); color: var(--text);
+      -webkit-font-smoothing: antialiased; min-height: 100dvh; }
+
+    /* ── LOGIN SCREEN ── */
+    #loginScreen {
+      position: fixed; inset: 0; background: var(--dark);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 100; padding: 2rem;
+    }
+    .login-logo { height: 52px; width: 160px; object-fit: contain; filter: invert(1); margin-bottom: 2rem; }
+    .login-h { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300;
+      color: #fff; margin-bottom: .4rem; text-align: center; }
+    .login-sub { font-size: .85rem; color: rgba(255,255,255,.4); margin-bottom: 2.5rem; text-align: center; }
+    .login-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: .8rem; width: 100%; max-width: 480px; }
+    .login-card { background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 14px; padding: 1.4rem 1rem; text-align: center; cursor: pointer;
+      transition: all .2s; }
+    .login-card:hover { background: rgba(255,255,255,.12); border-color: var(--gold); transform: translateY(-2px); }
+    .login-card.owner { border-color: rgba(201,148,58,.3); background: rgba(201,148,58,.08); }
+    .login-av { width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: rgba(255,255,255,.7);
+      margin: 0 auto .8rem; }
+    .login-av.gold { background: rgba(201,148,58,.2); color: var(--gold); }
+    .login-name { font-size: .9rem; font-weight: 500; color: #fff; margin-bottom: .15rem; }
+    .login-role { font-size: .72rem; color: rgba(255,255,255,.35); }
+
+    /* ── LAYOUT ── */
+    .app { display: none; }
+    .app.visible { display: flex; min-height: 100dvh; }
+
+    /* SIDEBAR */
+    .sidebar { width: 220px; flex-shrink: 0; background: var(--dark);
+      display: flex; flex-direction: column; padding: 1.25rem 0; }
+    @media(max-width:768px){ .sidebar { display: none; } }
+    .sb-logo { padding: 0 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .sb-logo img { height: 36px; width: 110px; object-fit: contain; filter: invert(1); display: block; }
+    .sb-user { padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .sb-user-av { width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(201,148,58,.2); color: var(--gold);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 600; margin-right: .6rem; vertical-align: middle; }
+    .sb-user-name { font-size: .83rem; font-weight: 500; color: #fff; vertical-align: middle; }
+    .sb-user-role { font-size: .68rem; color: rgba(255,255,255,.3); display: block; margin-top: .1rem; }
+    .sb-nav { padding: .8rem 0; flex: 1; }
+    .sb-section { font-size: .58rem; font-weight: 700; letter-spacing: .15em;
+      text-transform: uppercase; color: rgba(255,255,255,.2); padding: .6rem 1.25rem .3rem; }
+    .sb-link { display: flex; align-items: center; gap: .7rem; padding: .6rem 1.25rem;
+      font-size: .83rem; color: rgba(255,255,255,.45); cursor: pointer;
+      transition: all .2s; border-left: 2px solid transparent; }
+    .sb-link:hover { color: rgba(255,255,255,.8); background: rgba(255,255,255,.04); }
+    .sb-link.active { color: #fff; border-left-color: var(--gold); background: rgba(255,255,255,.05); }
+    .sb-link span { font-size: 1rem; }
+    .sb-bottom { padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,.07); }
+    .btn-logout { background: none; border: none; color: rgba(255,255,255,.25);
+      font-family: 'Jost', sans-serif; font-size: .78rem; cursor: pointer;
+      display: flex; align-items: center; gap: .4rem; transition: color .2s; }
+    .btn-logout:hover { color: rgba(255,255,255,.6); }
+
+    /* MAIN */
+    .main { flex: 1; overflow-y: auto; }
+    .main-header { padding: 1.5rem 1.75rem 0; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem;
+      font-weight: 300; color: var(--dark); }
+    .page-date { font-size: .8rem; color: var(--muted); }
+    .btn-new { padding: .65rem 1.4rem; background: var(--gold); border: none;
+      border-radius: 100px; font-family: 'Jost', sans-serif; font-size: .83rem;
+      font-weight: 500; color: #fff; cursor: pointer; transition: opacity .2s; }
+    .btn-new:hover { opacity: .88; }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: .8rem; padding: 1.25rem 1.75rem; }
+    .stat-card { background: #fff; border-radius: 14px; padding: 1.1rem;
+      box-shadow: 0 1px 12px rgba(30,42,53,.07); }
+    .stat-card.gold { background: var(--gold); }
+    .stat-card.gold .stat-val, .stat-card.gold .stat-lbl { color: #fff; }
+    .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 2rem;
+      font-weight: 400; color: var(--dark); line-height: 1; }
+    .stat-lbl { font-size: .7rem; font-weight: 500; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--muted); margin-top: .35rem; }
+
+    /* DATE BAR */
+    .date-bar { padding: 0 1.75rem 1rem; display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+    .date-scroll { display: flex; gap: .5rem; overflow-x: auto; scrollbar-width: none; }
+    .date-scroll::-webkit-scrollbar { display: none; }
+    .date-chip { padding: .5rem 1rem; border: 1.5px solid var(--polar); border-radius: 100px;
+      background: #fff; font-size: .8rem; color: var(--muted); cursor: pointer;
+      white-space: nowrap; transition: all .18s; font-family: 'Jost', sans-serif; }
+    .date-chip:hover { border-color: var(--cambridge); }
+    .date-chip.active { background: var(--dark); border-color: var(--dark); color: #fff; }
+    .date-input { padding: .5rem .9rem; border: 1.5px solid var(--polar); border-radius: 100px;
+      font-family: 'Jost', sans-serif; font-size: .8rem; color: var(--text);
+      outline: none; background: #fff; cursor: pointer; }
+    .date-input:focus { border-color: var(--cambridge); }
+
+    /* EMPLOYEE TABS */
+    .emp-tabs { display: flex; gap: .4rem; padding: 0 1.75rem .75rem;
+      overflow-x: auto; scrollbar-width: none; }
+    .emp-tabs::-webkit-scrollbar { display: none; }
+    .emp-tab { padding: .4rem 1rem; border-radius: 100px; border: 1.5px solid var(--polar);
+      background: #fff; font-size: .8rem; color: var(--muted); cursor: pointer;
+      white-space: nowrap; transition: all .18s; font-family: 'Jost', sans-serif; }
+    .emp-tab:hover { border-color: var(--cambridge); }
+    .emp-tab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+    /* CONTENT AREA */
+    .content-area { padding: 0 1.75rem 2rem; }
+
+    /* TIMELINE */
+    .timeline { background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 1px 12px rgba(30,42,53,.07); }
+    .timeline-head { padding: .9rem 1.2rem; border-bottom: 1px solid var(--polar);
+      display: flex; align-items: center; justify-content: space-between; }
+    .timeline-head h3 { font-size: .85rem; font-weight: 600; color: var(--text); }
+    .timeline-count { font-size: .75rem; color: var(--muted); }
+    .timeline-body { padding: .5rem; position: relative; }
+    .tl-hour-row { display: flex; align-items: flex-start; min-height: 64px;
+      border-top: 1px solid var(--polar); padding: .4rem 0; }
+    .tl-hour-row:first-child { border-top: none; }
+    .tl-time { width: 52px; flex-shrink: 0; padding: 0 .6rem;
+      font-size: .72rem; color: var(--muted); padding-top: .1rem; }
+    .tl-cells { flex: 1; display: flex; flex-wrap: wrap; gap: .4rem; min-height: 48px;
+      padding: 0 .3rem; align-content: flex-start; }
+    .tl-event { padding: .45rem .75rem; border-radius: 10px; font-size: .75rem;
+      cursor: pointer; transition: opacity .2s; max-width: 280px; }
+    .tl-event:hover { opacity: .85; }
+    .tl-event-svc { font-weight: 600; margin-bottom: .15rem; }
+    .tl-event-info { color: rgba(0,0,0,.55); font-size: .7rem; }
+    .tl-empty { display: flex; align-items: center; justify-content: center;
+      padding: 2.5rem; color: var(--muted); font-size: .88rem; }
+
+    /* EVENT COLORS */
+    .ev-cabello { background: #EEF4FB; color: var(--blue); border-left: 3px solid var(--blue); }
+    .ev-unas    { background: #FDF0E8; color: #C0693A; border-left: 3px solid var(--orange); }
+    .ev-estetica { background: #F0F9F4; color: #1E7A46; border-left: 3px solid var(--green); }
+    .ev-otro    { background: var(--polar); color: var(--muted); border-left: 3px solid var(--sand); }
+
+    /* BOOKING LIST */
+    .bk-list { display: grid; gap: .65rem; }
+    .bk-item { background: #fff; border-radius: 14px; padding: 1rem 1.1rem;
+      box-shadow: 0 1px 10px rgba(30,42,53,.06); display: flex; align-items: flex-start;
+      gap: .9rem; border-left: 3px solid var(--polar); transition: box-shadow .18s; cursor: pointer; }
+    .bk-item:hover { box-shadow: 0 4px 24px rgba(30,42,53,.12); }
+    .bk-item.done { opacity: .55; }
+    .bk-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .bk-body { flex: 1; min-width: 0; }
+    .bk-top { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+    .bk-svc { font-weight: 600; font-size: .9rem; }
+    .bk-badge { font-size: .65rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+      padding: .18rem .55rem; border-radius: 100px; }
+    .badge-ok  { background: #E8F8EE; color: var(--green); }
+    .badge-done{ background: var(--polar); color: var(--muted); }
+    .badge-can { background: #FDECEC; color: var(--red); }
+    .bk-meta { font-size: .78rem; color: var(--muted); margin-top: .25rem; }
+    .bk-client { font-size: .82rem; color: var(--text); margin-top: .2rem; }
+    .bk-actions { display: flex; gap: .4rem; flex-shrink: 0; margin-top: .1rem; }
+    .bk-btn { padding: .35rem .7rem; border-radius: 100px; border: 1.5px solid var(--polar);
+      background: none; font-family: 'Jost', sans-serif; font-size: .72rem;
+      cursor: pointer; color: var(--muted); transition: all .18s; }
+    .bk-btn:hover { border-color: var(--cambridge); color: var(--text); }
+    .bk-btn.done-btn:hover { background: var(--green); border-color: var(--green); color: #fff; }
+    .bk-btn.cancel-btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 3.5rem 1rem; color: var(--muted); }
+    .empty-icon { font-size: 2.5rem; margin-bottom: .8rem; opacity: .4; }
+    .empty-text { font-size: .9rem; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(30,42,53,.45);
+      display: flex; align-items: flex-end; justify-content: center; z-index: 200;
+      animation: fadeIn .2s; }
+    @media(min-width:600px){ .modal-overlay { align-items: center; } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal { background: #fff; border-radius: 20px 20px 0 0; padding: 1.5rem;
+      width: 100%; max-width: 480px; max-height: 92dvh; overflow-y: auto;
+      animation: slideUp .3s cubic-bezier(.34,1.56,.64,1); }
+    @media(min-width:600px){ .modal { border-radius: 20px; } }
+    @keyframes slideUp { from { transform: translateY(40px); opacity:0; } to { transform: none; opacity:1; } }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+    .modal-h { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem;
+      font-weight: 400; color: var(--dark); }
+    .modal-close { background: none; border: none; font-size: 1.2rem; cursor: pointer;
+      color: var(--muted); padding: .2rem .4rem; border-radius: 8px; }
+    .modal-rows { display: grid; gap: .8rem; }
+    .modal-row { display: flex; gap: .8rem; }
+    .modal-ico { font-size: 1rem; padding-top: .05rem; }
+    .modal-lbl { font-size: .68rem; color: var(--muted); margin-bottom: .1rem; }
+    .modal-val { font-size: .92rem; color: var(--text); font-weight: 500; }
+    .modal-divider { border: none; border-top: 1px solid var(--polar); margin: .5rem 0; }
+    .modal-actions { display: flex; gap: .65rem; margin-top: 1.4rem; }
+    .modal-btn { flex: 1; padding: .8rem; border-radius: 100px; border: 1.5px solid var(--polar);
+      font-family: 'Jost', sans-serif; font-size: .85rem; cursor: pointer;
+      font-weight: 500; transition: all .18s; }
+    .modal-btn.primary { background: var(--green); border-color: var(--green); color: #fff; }
+    .modal-btn.danger { background: var(--red); border-color: var(--red); color: #fff; }
+    .modal-btn:hover:not(.primary):not(.danger) { border-color: var(--cambridge); }
+
+    .hidden { display: none !important; }
+    .mobile-header { display: none; }
+    @media(max-width:768px){
+      .mobile-header { display: flex; align-items: center; justify-content: space-between;
+        padding: 1rem 1.25rem; background: var(--dark); }
+      .mobile-header img { height: 30px; width: 100px; object-fit: contain; filter: invert(1); }
+      .mobile-header-right { display: flex; align-items: center; gap: .75rem; }
+      .mob-user { font-size: .8rem; color: rgba(255,255,255,.6); }
+      .mob-logout { background: none; border: none; font-size: .75rem; color: rgba(255,255,255,.35);
+        cursor: pointer; font-family: 'Jost', sans-serif; }
+      .stats-row { padding: 1rem; }
+      .date-bar, .emp-tabs { padding-left: 1rem; padding-right: 1rem; }
+      .main-header { padding: 1rem; }
+      .content-area { padding: 0 1rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <img src="logo.png" class="login-logo" alt="Mon Ciel Studio">
+  <h1 class="login-h">Bienvenida a tu agenda</h1>
+  <p class="login-sub">Selecciona tu nombre para entrar</p>
+  <div class="login-grid" id="loginGrid"></div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <!-- Mobile header -->
+  <div class="mobile-header">
+    <img src="logo.png" alt="Mon Ciel">
+    <div class="mobile-header-right">
+      <span class="mob-user" id="mobUserName"></span>
+      <button class="mob-logout" onclick="logout()">Salir</button>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-logo"><img src="logo.png" alt="Mon Ciel"></div>
+    <div class="sb-user">
+      <div>
+        <span class="sb-user-av" id="sbAv">—</span>
+        <span class="sb-user-name" id="sbName">—</span>
+      </div>
+      <span class="sb-user-role" id="sbRole">—</span>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Mi espacio</div>
+      <div class="sb-link active" onclick="showView('agenda')"><span>📅</span> Mi agenda</div>
+      <div class="sb-link" onclick="showView('upcoming')"><span>🔜</span> Próximas citas</div>
+      <div id="ownerNav" class="hidden">
+        <div class="sb-section">Administrar</div>
+        <div class="sb-link" onclick="showView('all')"><span>👥</span> Todas las citas</div>
+        <div class="sb-link" onclick="showView('export')"><span>📊</span> Exportar datos</div>
+      </div>
+    </nav>
+    <div class="sb-bottom">
+      <button class="btn-logout" onclick="logout()">← Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <h1 class="page-title" id="pageTitle">Mi agenda de hoy</h1>
+        <div class="page-date" id="pageDate"></div>
+      </div>
+      <button class="btn-new" onclick="window.open('booking.html','_blank')">+ Nueva reserva</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- Date selector -->
+    <div class="date-bar" id="dateBar">
+      <div class="date-scroll" id="dateChips"></div>
+      <input type="date" class="date-input" id="dateInput" onchange="selectDateFromInput(this.value)">
+    </div>
+
+    <!-- Employee filter (owner only) -->
+    <div class="emp-tabs hidden" id="empTabs"></div>
+
+    <!-- Content -->
+    <div class="content-area">
+      <div id="agendaView"></div>
+    </div>
+  </main>
+</div>
+
+<!-- BOOKING DETAIL MODAL -->
+<div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <span class="modal-h">Detalle de cita</span>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-rows" id="modalContent"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// DATA
+// ═══════════════════════════════════
+const USERS = [
+  { id:'owner',  name:'Paulo',   role:'Administrador', av:'PZ', owner:true },
+  { id:'marta',  name:'Marta',   role:'Estilista',      av:'MA' },
+  { id:'difrani',name:'Difrani',  role:'Especialista',   av:'DI' },
+  { id:'tatiana',name:'Tatiana',  role:'Estilista',      av:'TA' },
+  { id:'alisson',name:'Alisson',  role:'Nail artist',    av:'AL' },
+];
+
+const CAT_MAP = {
+  'corte':'cabello','coloracion':'cabello','tratamiento':'cabello','lavado':'cabello',
+  'semi-m':'unas','semi-p':'unas','rubber':'unas','acrilicas':'unas',
+  'depilacion':'estetica','lifting':'estetica','facial':'estetica',
+};
+const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DOW_ES = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let CU = null; // current user
+let SEL_DATE = new Date();
+let SEL_EMP = 'all';
+let CURRENT_VIEW = 'agenda';
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  buildLoginGrid();
+  updatePageDate();
+
+  // Try to restore session
+  const saved = sessionStorage.getItem('mc_admin_user');
+  if (saved) { const u = USERS.find(u => u.id === saved); if (u) enter(u); }
+});
+
+function buildLoginGrid() {
+  document.getElementById('loginGrid').innerHTML = USERS.map(u => `
+    <div class="login-card ${u.owner?'owner':''}" onclick="enter(USERS.find(x=>x.id==='${u.id}'))">
+      <div class="login-av ${u.owner?'gold':''}">${u.av}</div>
+      <div class="login-name">${u.name}</div>
+      <div class="login-role">${u.role}</div>
+    </div>`
+  ).join('');
+}
+
+function enter(user) {
+  CU = user;
+  sessionStorage.setItem('mc_admin_user', user.id);
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('sbAv').textContent = user.av;
+  document.getElementById('sbName').textContent = user.name;
+  document.getElementById('sbRole').textContent = user.role;
+  document.getElementById('mobUserName').textContent = user.name;
+
+  if (user.owner) {
+    document.getElementById('ownerNav').classList.remove('hidden');
+    document.getElementById('empTabs').classList.remove('hidden');
+    buildEmpTabs();
+  }
+
+  loadView();
+}
+
+function logout() {
+  sessionStorage.removeItem('mc_admin_user');
+  CU = null;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+}
+
+// ═══════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════
+function showView(v) {
+  CURRENT_VIEW = v;
+  document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'));
+  event?.target?.closest('.sb-link')?.classList.add('active');
+  loadView();
+}
+
+function loadView() {
+  const all = getBookings();
+  const v = CURRENT_VIEW;
+
+  if (v === 'agenda' || v === 'all') {
+    document.getElementById('dateBar').style.display = 'flex';
+    buildDateChips();
+    const filtered = filterBookings(all);
+    renderStats(filtered);
+    renderTimeline(filtered);
+    document.getElementById('pageTitle').textContent =
+      v === 'all' ? 'Todas las citas' : `Mi agenda — ${fmtDate(SEL_DATE)}`;
+  }
+  if (v === 'upcoming') {
+    document.getElementById('dateBar').style.display = 'none';
+    const upcoming = all
+      .filter(b => {
+        if (!CU.owner && b.empId !== CU.id && b.empId !== 'any') return false;
+        const d = new Date(b.date);
+        const today = new Date(); today.setHours(0,0,0,0);
+        return d >= today && b.status !== 'cancelada';
+      })
+      .sort((a,b) => new Date(a.date) - new Date(b.date) || a.time.localeCompare(b.time));
+    renderUpcoming(upcoming);
+    document.getElementById('pageTitle').textContent = 'Próximas citas';
+  }
+  if (v === 'export') {
+    renderExport(all);
+    document.getElementById('pageTitle').textContent = 'Exportar datos';
+  }
+  updatePageDate();
+}
+
+// ═══════════════════════════════════
+// FILTER
+// ═══════════════════════════════════
+function filterBookings(all) {
+  const dstr = SEL_DATE.toDateString();
+  return all.filter(b => {
+    if (b.date !== dstr) return false;
+    if (!CU.owner && b.empId !== CU.id && b.empId !== 'any') return false;
+    if (CU.owner && SEL_EMP !== 'all' && b.empId !== SEL_EMP && b.empId !== 'any') return false;
+    return true;
+  });
+}
+
+// ═══════════════════════════════════
+// STATS
+// ═══════════════════════════════════
+function renderStats(bookings) {
+  const active = bookings.filter(b => b.status !== 'cancelada');
+  const done   = bookings.filter(b => b.status === 'completada');
+  const rev    = done.reduce((s,b) => s + (b.svcPrice||0), 0);
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card gold">
+      <div class="stat-val">${active.length}</div>
+      <div class="stat-lbl">Citas hoy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${done.length}</div>
+      <div class="stat-lbl">Completadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">₡${Math.floor(rev/1000)}K</div>
+      <div class="stat-lbl">Ingresos del día</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${bookings.filter(b=>b.status==='cancelada').length}</div>
+      <div class="stat-lbl">Canceladas</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// TIMELINE
+// ═══════════════════════════════════
+function renderTimeline(bookings) {
+  const container = document.getElementById('agendaView');
+
+  if (!bookings.length) {
+    container.innerHTML = `
+      <div class="timeline"><div class="tl-empty">
+        <div><div class="empty-icon">📭</div>
+        <div class="empty-text">No hay citas para este día</div></div>
+      </div></div>`;
+    return;
+  }
+
+  const HOURS = Array.from({length:10}, (_,i)=>i+9);
+  let rows = '';
+  HOURS.forEach(h => {
+    const ts = `${String(h).padStart(2,'0')}:00`;
+    const events = bookings.filter(b => b.time && b.time.startsWith(ts.slice(0,2)));
+    const evHtml = events.map(b => {
+      const cat = CAT_MAP[b.svcId]||'otro';
+      const emp = b.empId==='any'?'Sin preferencia':b.empName||b.empId;
+      return `<div class="tl-event ev-${cat}" onclick="openModal('${b.id}')">
+        <div class="tl-event-svc">${b.svcName}</div>
+        <div class="tl-event-info">${b.clientName} · ${emp} · ${b.time}</div>
+      </div>`;
+    }).join('');
+    rows += `<div class="tl-hour-row">
+      <div class="tl-time">${ts}</div>
+      <div class="tl-cells">${evHtml}</div>
+    </div>`;
+  });
+
+  container.innerHTML = `
+    <div class="timeline">
+      <div class="timeline-head">
+        <h3>Agenda del día — ${fmtDate(SEL_DATE)}</h3>
+        <span class="timeline-count">${bookings.length} cita${bookings.length!==1?'s':''}</span>
+      </div>
+      <div class="timeline-body">${rows}</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// UPCOMING LIST
+// ═══════════════════════════════════
+function renderUpcoming(bookings) {
+  const container = document.getElementById('agendaView');
+  if (!bookings.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🌸</div><div class="empty-text">No hay citas próximas registradas</div></div>`;
+    return;
+  }
+
+  let html = '<div class="bk-list">';
+  let lastDate = '';
+  bookings.forEach(b => {
+    if (b.date !== lastDate) {
+      lastDate = b.date;
+      const d = new Date(b.date);
+      html += `<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.5rem 0 .25rem">${fmtFull(d)}</div>`;
+    }
+    html += bookingCard(b);
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ═══════════════════════════════════
+// EXPORT VIEW
+// ═══════════════════════════════════
+function renderExport(all) {
+  const container = document.getElementById('agendaView');
+  const csv = toCSV(all);
+  container.innerHTML = `
+    <div class="timeline" style="padding:1.5rem">
+      <p style="font-size:.9rem;color:var(--muted);margin-bottom:1rem">
+        Total de reservas guardadas: <strong>${all.length}</strong>
+      </p>
+      <button class="btn-new" onclick="downloadCSV()">⬇ Descargar CSV</button>
+      <div style="margin-top:1.25rem;overflow-x:auto">
+        <pre style="font-size:.72rem;color:var(--muted);line-height:1.5;max-height:320px;overflow-y:auto;background:var(--off);padding:1rem;border-radius:10px">${csv.slice(0,2000)}${csv.length>2000?'\n...(truncado)':''}</pre>
+      </div>
+    </div>`;
+}
+
+function toCSV(bookings) {
+  const h = 'ID,Fecha,Hora,Servicio,Empleada,Cliente,Teléfono,Email,Precio,Estado\n';
+  return h + bookings.map(b =>
+    [b.id,b.date,b.time,`"${b.svcName}"`,b.empName||b.empId,`"${b.clientName}"`,b.clientPhone,b.clientEmail||'',b.svcPrice||0,b.status].join(',')
+  ).join('\n');
+}
+
+function downloadCSV() {
+  const all = getBookings();
+  const csv = toCSV(all);
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `monciel-reservas-${Date.now()}.csv`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════
+// DATE CHIPS
+// ═══════════════════════════════════
+function buildDateChips() {
+  const today = new Date();
+  const chips = [];
+  for (let i = -1; i <= 6; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    chips.push(d);
+  }
+  document.getElementById('dateChips').innerHTML = chips.map(d => {
+    const active = d.toDateString() === SEL_DATE.toDateString();
+    const label = d.toDateString() === today.toDateString() ? 'Hoy' :
+                  d.toDateString() === new Date(today.setDate(today.getDate()-1)).toDateString() ? 'Ayer' :
+                  `${d.getDate()} ${MONTHS_ES[d.getMonth()].slice(0,3)}`;
+    return `<div class="date-chip ${active?'active':''}" onclick="selectDate(${d.getFullYear()},${d.getMonth()},${d.getDate()})">${label}</div>`;
+  }).join('');
+  document.getElementById('dateInput').value = toInputDate(SEL_DATE);
+}
+
+function selectDate(y, m, d) {
+  SEL_DATE = new Date(y, m, d);
+  loadView();
+}
+function selectDateFromInput(val) {
+  const [y,m,d] = val.split('-').map(Number);
+  SEL_DATE = new Date(y, m-1, d);
+  loadView();
+}
+
+// ═══════════════════════════════════
+// EMPLOYEE TABS
+// ═══════════════════════════════════
+function buildEmpTabs() {
+  const employees = USERS.filter(u => !u.owner);
+  document.getElementById('empTabs').innerHTML = `
+    <div class="emp-tab ${SEL_EMP==='all'?'active':''}" onclick="setEmp('all')">Todas</div>
+    ${employees.map(e =>
+      `<div class="emp-tab ${SEL_EMP===e.id?'active':''}" onclick="setEmp('${e.id}')">${e.name}</div>`
+    ).join('')}`;
+}
+function setEmp(id) {
+  SEL_EMP = id;
+  buildEmpTabs();
+  loadView();
+}
+
+// ═══════════════════════════════════
+// BOOKING CARD (list view)
+// ═══════════════════════════════════
+function bookingCard(b) {
+  const cat = CAT_MAP[b.svcId]||'otro';
+  const badge = { confirmada:'badge-ok', completada:'badge-done', cancelada:'badge-can' }[b.status]||'badge-ok';
+  const label = { confirmada:'Confirmada', completada:'Completada', cancelada:'Cancelada' }[b.status]||'—';
+  const emp = b.empId==='any'?'Sin preferencia':b.empName||b.empId;
+  return `
+    <div class="bk-item ${b.status==='completada'?'done':''}" style="border-left-color:${cat==='cabello'?'var(--blue)':cat==='unas'?'var(--orange)':cat==='estetica'?'var(--green)':'var(--sand)'}">
+      <div class="bk-icon">${b.svcIcon||'📋'}</div>
+      <div class="bk-body">
+        <div class="bk-top">
+          <span class="bk-svc">${b.svcName}</span>
+          <span class="bk-badge ${badge}">${label}</span>
+        </div>
+        <div class="bk-meta">⏰ ${b.time} · 👤 ${emp}</div>
+        <div class="bk-client">👩 ${b.clientName} · ${b.clientPhone||''}</div>
+      </div>
+      <div class="bk-actions">
+        <button class="bk-btn done-btn" onclick="markStatus('${b.id}','completada',event)" title="Marcar como completada">✓</button>
+        <button class="bk-btn cancel-btn" onclick="markStatus('${b.id}','cancelada',event)" title="Cancelar">✕</button>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// MODAL
+// ═══════════════════════════════════
+function openModal(id) {
+  const b = getBookings().find(x => x.id === id);
+  if (!b) return;
+  const emp = b.empId==='any'?'Sin preferencia':b.empName||b.empId;
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-row"><span class="modal-ico">${b.svcIcon||'📋'}</span><div>
+      <div class="modal-lbl">Servicio</div><div class="modal-val">${b.svcName}</div></div></div>
+    <div class="modal-row"><span class="modal-ico">📅</span><div>
+      <div class="modal-lbl">Fecha y hora</div><div class="modal-val">${b.date} · ${b.time}</div></div></div>
+    <div class="modal-row"><span class="modal-ico">👤</span><div>
+      <div class="modal-lbl">Especialista</div><div class="modal-val">${emp}</div></div></div>
+    <hr class="modal-divider">
+    <div class="modal-row"><span class="modal-ico">👩</span><div>
+      <div class="modal-lbl">Cliente</div><div class="modal-val">${b.clientName}</div></div></div>
+    <div class="modal-row"><span class="modal-ico">📱</span><div>
+      <div class="modal-lbl">WhatsApp</div>
+      <div class="modal-val"><a href="https://wa.me/${b.clientPhone?.replace(/\D/g,'')}" target="_blank" style="color:var(--blue)">${b.clientPhone}</a></div></div></div>
+    ${b.clientEmail?`<div class="modal-row"><span class="modal-ico">✉️</span><div>
+      <div class="modal-lbl">Correo</div><div class="modal-val">${b.clientEmail}</div></div></div>`:''}
+    ${b.clientNotes?`<div class="modal-row"><span class="modal-ico">📝</span><div>
+      <div class="modal-lbl">Notas</div><div class="modal-val">${b.clientNotes}</div></div></div>`:''}
+    <hr class="modal-divider">
+    <div class="modal-row"><span class="modal-ico">💰</span><div>
+      <div class="modal-lbl">Precio estimado</div><div class="modal-val">₡${(b.svcPrice||0).toLocaleString()}</div></div></div>
+    <div class="modal-row"><span class="modal-ico">🔖</span><div>
+      <div class="modal-lbl">Estado</div><div class="modal-val" style="text-transform:capitalize">${b.status||'confirmada'}</div></div></div>`;
+
+  document.getElementById('modalActions').innerHTML = `
+    <button class="modal-btn primary" onclick="markStatus('${b.id}','completada')">✓ Completada</button>
+    <button class="modal-btn danger"  onclick="markStatus('${b.id}','cancelada')">Cancelar</button>`;
+
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+function closeModal(e) { if (e.target === document.getElementById('modalOverlay')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modalOverlay').classList.add('hidden'); }
+
+// ═══════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════
+function markStatus(id, status, e) {
+  if (e) e.stopPropagation();
+  const bookings = getBookings();
+  const idx = bookings.findIndex(b => b.id === id);
+  if (idx === -1) return;
+  bookings[idx].status = status;
+  saveBookings(bookings);
+  closeModalDirect();
+  loadView();
+}
+
+// ═══════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════
+function getBookings() {
+  try { return JSON.parse(localStorage.getItem('mc_bookings') || '[]'); } catch { return []; }
+}
+function saveBookings(b) { localStorage.setItem('mc_bookings', JSON.stringify(b)); }
+
+// ═══════════════════════════════════
+// UTILS
+// ═══════════════════════════════════
+function updatePageDate() {
+  const now = new Date();
+  document.getElementById('pageDate').textContent =
+    `${DOW_ES[now.getDay()]}, ${now.getDate()} de ${MONTHS_ES[now.getMonth()]} ${now.getFullYear()}`;
+}
+function fmtDate(d) { return `${d.getDate()} de ${MONTHS_ES[d.getMonth()]}`; }
+function fmtFull(d) { return `${DOW_ES[d.getDay()]} ${d.getDate()} de ${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`; }
+function toInputDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+</script>
+</body>
+</html>
