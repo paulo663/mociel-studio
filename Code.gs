@@ -70,6 +70,12 @@ function setupSheets() {
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
+    if (data.action === 'list') {
+      const bookings = getAllBookings();
+      return ContentService
+        .createTextOutput(JSON.stringify({ ok: true, bookings }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     const result = processBooking(data);
     return ContentService
       .createTextOutput(JSON.stringify({ ok: true, ...result }))

@@ -773,7 +773,11 @@ let _cachedBookings = null;
 
 async function fetchBookingsFromSheets() {
   try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=list');
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'list' }),
+    });
     const data = await res.json();
     if (data.ok && Array.isArray(data.bookings)) {
       _cachedBookings = data.bookings;
