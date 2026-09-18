@@ -849,7 +849,7 @@ function openModal(id) {
       <div class="modal-lbl">Cliente</div><div class="modal-val">${b.clientName}</div></div></div>
     <div class="modal-row"><span class="modal-ico">📱</span><div>
       <div class="modal-lbl">WhatsApp</div>
-      <div class="modal-val"><a href="https://wa.me/${b.clientPhone?.replace(/\D/g,'')}" target="_blank" style="color:var(--blue)">${b.clientPhone}</a></div></div></div>
+      <div class="modal-val"><a href="https://wa.me/${String(b.clientPhone||'').replace(/\D/g,'')}" target="_blank" style="color:var(--blue)">${b.clientPhone}</a></div></div></div>
     ${b.clientEmail?`<div class="modal-row"><span class="modal-ico">✉️</span><div>
       <div class="modal-lbl">Correo</div><div class="modal-val">${b.clientEmail}</div></div></div>`:''}
     ${b.clientNotes?`<div class="modal-row"><span class="modal-ico">📝</span><div>
