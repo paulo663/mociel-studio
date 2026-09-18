@@ -265,7 +265,7 @@
 <!-- LOGIN -->
 <div id="loginScreen">
   <img src="logo.png" class="login-logo" alt="Mon Ciel Studio">
-  <h1 class="login-h">Bienvenida a tu agenda</h1>
+  <h1 class="login-h">Bienvenida a tu horario</h1>
   <p class="login-sub" id="loginSub">Selecciona tu nombre para entrar</p>
   <div class="login-grid" id="loginGrid"></div>
   <div id="passBox" style="display:none;width:100%;max-width:320px;margin-top:1.5rem">
@@ -316,7 +316,7 @@
     </div>
     <nav class="sb-nav">
       <div class="sb-section">Mi espacio</div>
-      <div class="sb-link active" onclick="showView('agenda')"><span>📅</span> Mi agenda</div>
+      <div class="sb-link active" onclick="showView('agenda')"><span>📅</span> Mi horario</div>
       <div id="managerNav" class="hidden">
         <div class="sb-section">Administrar</div>
         <div class="sb-link" onclick="showView('upcoming')"><span>🔜</span> Próximas citas</div>
@@ -498,7 +498,7 @@ function loadView() {
     renderStats(filtered);
     renderTimeline(filtered);
     document.getElementById('pageTitle').textContent =
-      v === 'all' ? 'Todas las citas' : `Mi agenda — ${fmtDate(SEL_DATE)}`;
+      v === 'all' ? 'Todas las citas' : `Mi horario — ${fmtDate(SEL_DATE)}`;
   }
   if (v === 'upcoming') {
     document.getElementById('dateBar').style.display = 'none';
