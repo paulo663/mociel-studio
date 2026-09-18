@@ -88,6 +88,13 @@ function doPost(e) {
 function doGet(e) {
   const action = e.parameter.action;
 
+  if (action === 'list') {
+    const bookings = getAllBookings();
+    return ContentService
+      .createTextOutput(JSON.stringify({ ok: true, bookings }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'availability') {
     const date  = e.parameter.date;   // 'YYYY-MM-DD'
     const empId = e.parameter.emp;    // 'marta', 'any', etc.
@@ -215,6 +222,29 @@ function getAvailableSlots(dateStr, empId, durationMin) {
     slots.push({ time: ts, available: !taken });
   }
   return slots;
+}
+
+function getAllBookings() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.SHEET_NAME);
+  if (!sheet) return [];
+  const data = sheet.getDataRange().getValues();
+  if (data.length < 2) return [];
+  return data.slice(1).map(row => ({
+    id:          row[0],
+    date:        row[1],
+    time:        row[2],
+    duration:    row[3],
+    svcName:     row[4],
+    svcPrice:    row[5],
+    empName:     row[6],
+    empId:       row[6]?.toLowerCase(),
+    clientName:  row[7],
+    clientPhone: row[8],
+    clientEmail: row[9],
+    clientNotes: row[10],
+    status:      row[11] || 'confirmada',
+    createdAt:   row[13],
+  }));
 }
 
 function getBookedSlots(dateStr, empId) {
