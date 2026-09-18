@@ -467,7 +467,8 @@ function enter(user) {
     buildEmpTabs();
   }
 
-  fetchBookingsFromSheets().then(() => loadView());
+  loadView(); // show cached data immediately
+  fetchBookingsFromSheets().then(() => loadView()); // update with fresh data
 }
 
 function logout() {
@@ -610,7 +611,7 @@ function renderTimeline(bookings) {
   container.innerHTML = `
     <div class="timeline">
       <div class="timeline-head">
-        <h3>Agenda del día — ${fmtDate(SEL_DATE)}</h3>
+        <h3>Horario del día — ${fmtDate(SEL_DATE)}</h3>
         <span class="timeline-count">${bookings.length} cita${bookings.length!==1?'s':''}</span>
       </div>
       <div class="timeline-body">${rows}</div>
@@ -632,7 +633,7 @@ function renderUpcoming(bookings) {
   bookings.forEach(b => {
     if (b.date !== lastDate) {
       lastDate = b.date;
-      const d = new Date(b.date);
+      const d = /^\d{4}-\d{2}-\d{2}$/.test(b.date) ? new Date(b.date + 'T00:00:00') : new Date(b.date);
       const isToday = d.toDateString() === new Date().toDateString();
       const label = isToday ? 'Hoy — ' + fmtFull(d) : fmtFull(d);
       html += `<div class="up-date-header">📅 ${label}</div>`;
