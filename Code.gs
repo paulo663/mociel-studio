@@ -244,6 +244,8 @@ function getAllBookings() {
     if (dateVal instanceof Date) {
       dateVal = Utilities.formatDate(dateVal, CONFIG.TIMEZONE, 'yyyy-MM-dd');
     }
+    const rawEmp = String(row[6] || '');
+    const empId = (rawEmp.toLowerCase() === 'sin preferencia' || rawEmp === 'any') ? 'any' : rawEmp.toLowerCase();
     return {
       id:          row[0],
       date:        dateVal,
@@ -251,8 +253,8 @@ function getAllBookings() {
       duration:    row[3],
       svcName:     row[4],
       svcPrice:    row[5],
-      empName:     row[6],
-      empId:       row[6]?.toLowerCase(),
+      empName:     rawEmp,
+      empId:       empId,
       clientName:  row[7],
       clientPhone: row[8],
       clientEmail: row[9],
