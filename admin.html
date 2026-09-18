@@ -585,7 +585,7 @@ function renderTimeline(bookings) {
       const emp = b.empId==='any'?'Sin preferencia':b.empName||b.empId;
       return `<div class="tl-event ev-${cat}" onclick="openModal('${b.id}')">
         <div class="tl-event-svc">${b.svcName}</div>
-        <div class="tl-event-info">${b.clientName} · ${emp} · ${b.time}</div>
+        <div class="tl-event-info">${b.clientName} · ${emp} · ${fmtTime(b.time)}</div>
       </div>`;
     }).join('');
     rows += `<div class="tl-hour-row">
@@ -643,7 +643,7 @@ function upcomingCard(b) {
           ${empRole ? `<div class="up-emp-role">${empRole}</div>` : ''}
         </div>
         <div class="up-datetime">
-          <div class="up-time">⏰ ${b.time}</div>
+          <div class="up-time">⏰ ${fmtTime(b.time)}</div>
           <div class="up-time-label">${b.duration ? b.duration + ' min' : ''}</div>
         </div>
       </div>
@@ -757,7 +757,7 @@ function bookingCard(b) {
           <span class="bk-svc">${b.svcName}</span>
           <span class="bk-badge ${badge}">${label}</span>
         </div>
-        <div class="bk-meta">⏰ ${b.time} · 👤 ${emp}</div>
+        <div class="bk-meta">⏰ ${fmtTime(b.time)} · 👤 ${emp}</div>
         <div class="bk-client">👩 ${b.clientName} · ${b.clientPhone||''}</div>
       </div>
       <div class="bk-actions">
@@ -778,7 +778,7 @@ function openModal(id) {
     <div class="modal-row"><span class="modal-ico">${b.svcIcon||'📋'}</span><div>
       <div class="modal-lbl">Servicio</div><div class="modal-val">${b.svcName}</div></div></div>
     <div class="modal-row"><span class="modal-ico">📅</span><div>
-      <div class="modal-lbl">Fecha y hora</div><div class="modal-val">${b.date} · ${b.time}</div></div></div>
+      <div class="modal-lbl">Fecha y hora</div><div class="modal-val">${b.date} · ${fmtTime(b.time)}</div></div></div>
     <div class="modal-row"><span class="modal-ico">👤</span><div>
       <div class="modal-lbl">Especialista</div><div class="modal-val">${emp}</div></div></div>
     <hr class="modal-divider">
@@ -865,6 +865,14 @@ function updatePageDate() {
 }
 function fmtDate(d) { return `${d.getDate()} de ${MONTHS_ES[d.getMonth()]}`; }
 function fmtFull(d) { return `${DOW_ES[d.getDay()]} ${d.getDate()} de ${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`; }
+function fmtTime(t) {
+  if (!t) return '—';
+  if (/^\d{1,2}:\d{2}/.test(String(t))) return String(t).slice(0, 5);
+  try {
+    const d = new Date(t);
+    return d.getUTCHours().toString().padStart(2,'0') + ':' + d.getUTCMinutes().toString().padStart(2,'0');
+  } catch { return String(t); }
+}
 function toInputDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
