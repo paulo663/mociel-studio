@@ -215,7 +215,22 @@
       font-weight: 500; transition: all .18s; }
     .modal-btn.primary { background: var(--green); border-color: var(--green); color: #fff; }
     .modal-btn.danger { background: var(--red); border-color: var(--red); color: #fff; }
-    .modal-btn:hover:not(.primary):not(.danger) { border-color: var(--cambridge); }
+    .modal-btn.start { background: var(--cambridge); border-color: var(--cambridge); color: #fff; font-size:1rem; }
+    .modal-btn.stop  { background: #388E3C; border-color: #388E3C; color: #fff; font-size:1rem; }
+    .modal-btn:hover:not(.primary):not(.danger):not(.start):not(.stop) { border-color: var(--cambridge); }
+    .status-chip { display:inline-block; padding:.2rem .75rem; border-radius:100px; font-size:.7rem; font-weight:700; letter-spacing:.06em; }
+    .chip-confirmada { background:#e8f4ff; color:#1976D2; }
+    .chip-en-proceso { background:#fff3e0; color:#E65100; }
+    .chip-completada { background:#e8f5e9; color:#2E7D32; }
+    .chip-cancelada  { background:#fce4ec; color:#C62828; }
+    .timer-big { font-size:2rem; font-weight:700; color:var(--cambridge); font-variant-numeric:tabular-nums; letter-spacing:-.02em; text-align:center; margin:.25rem 0; }
+    .timer-label { font-size:.7rem; color:var(--muted); text-align:center; }
+    .tl-event.en-proceso { border-left:3px solid #E65100 !important; background:rgba(230,81,0,.08) !important; }
+    .tl-event.completada { border-left:3px solid #388E3C !important; background:rgba(56,142,60,.07) !important; opacity:.75; }
+    .tl-event.cancelada  { opacity:.35; text-decoration:line-through; }
+    .tl-quick-btn { display:inline-block; margin-top:.3rem; padding:.15rem .55rem; border:none; border-radius:100px; font-size:.65rem; font-weight:600; cursor:pointer; }
+    .tl-quick-btn.iniciar { background:var(--cambridge); color:#fff; }
+    .tl-quick-btn.proceso { background:#E65100; color:#fff; }
 
     /* UPCOMING CARDS */
     .up-list { display: grid; gap: .75rem; }
@@ -378,11 +393,12 @@
 // DATA
 // ═══════════════════════════════════
 const USERS = [
-  { id:'owner',  name:'Paulo',   role:'Administrador', av:'PZ', owner:true,            pass:'1234' },
-  { id:'marta',  name:'Marta',   role:'Estilista',      av:'MA',                       pass:'1234' },
-  { id:'difrani',name:'Difrani',  role:'Especialista',   av:'DI', manager:true,         pass:'1234' },
-  { id:'tatiana',name:'Tatiana',  role:'Manicurista',    av:'TA',                       pass:'1234' },
-  { id:'alisson',name:'Alisson',  role:'Estilista',      av:'AL',                       pass:'1234' },
+  { id:'owner',   name:'Paulo',   role:'Administrador',  av:'PZ', owner:true,           pass:'2005' },
+  { id:'beatriz', name:'Beatriz', role:'Administradora', av:'BZ', owner:true,           pass:'2426' },
+  { id:'difrani', name:'Difrani', role:'Especialista',   av:'DI', manager:true,         pass:'1234' },
+  { id:'marta',   name:'Marta',   role:'Estilista',      av:'MA',                       pass:'1234' },
+  { id:'tatiana', name:'Tatiana', role:'Manicurista',    av:'TA',                       pass:'1234' },
+  { id:'alisson', name:'Alisson', role:'Estilista',      av:'AL',                       pass:'1234' },
 ];
 
 const CAT_MAP = {
@@ -600,9 +616,18 @@ function renderTimeline(bookings) {
     const evHtml = events.map(b => {
       const cat = CAT_MAP[b.svcId]||'otro';
       const emp = b.empId==='any'?'Sin preferencia':b.empName||b.empId;
-      return `<div class="tl-event ev-${cat}" onclick="openModal('${b.id}')">
+      const st = b.status || 'confirmada';
+      let extra = '';
+      if (st === 'confirmada') {
+        extra = `<button class="tl-quick-btn iniciar" onclick="event.stopPropagation();iniciarCita('${b.id}')">▶ Iniciar</button>`;
+      } else if (st === 'en proceso') {
+        const elapsed = formatElapsed(getTimerElapsed(b.id));
+        extra = `<span class="tl-quick-btn proceso" id="tl-timer-${b.id}">⏱ ${elapsed}</span>`;
+      }
+      return `<div class="tl-event ev-${cat} ${st.replace(' ','-')}" onclick="openModal('${b.id}')">
         <div class="tl-event-svc">${b.svcName}</div>
         <div class="tl-event-info">${b.clientName} · ${emp} · ${fmtTime(b.time)}</div>
+        ${extra}
       </div>`;
     }).join('');
     rows += `<div class="tl-hour-row">
@@ -619,6 +644,17 @@ function renderTimeline(bookings) {
       </div>
       <div class="timeline-body">${rows}</div>
     </div>`;
+
+  // Live timer ticks for "en proceso" cards
+  const inProcess = bookings.filter(b => (b.status||'confirmada') === 'en proceso');
+  if (inProcess.length && !_tlTimerInterval) {
+    _tlTimerInterval = setInterval(() => {
+      inProcess.forEach(b => {
+        const el = document.getElementById('tl-timer-' + b.id);
+        if (el) el.textContent = '⏱ ' + formatElapsed(getTimerElapsed(b.id));
+      });
+    }, 1000);
+  }
 }
 
 // ═══════════════════════════════════
@@ -791,6 +827,16 @@ function openModal(id) {
   const b = getBookings().find(x => x.id === id);
   if (!b) return;
   const emp = b.empId==='any'?'Sin preferencia':b.empName||b.empId;
+  const st = b.status || 'confirmada';
+  const chipClass = { confirmada:'chip-confirmada', 'en proceso':'chip-en-proceso', completada:'chip-completada', cancelada:'chip-cancelada' }[st] || 'chip-confirmada';
+  const chipLabel = { confirmada:'Confirmada', 'en proceso':'En proceso', completada:'Completada', cancelada:'Cancelada' }[st] || st;
+
+  let durationExtra = '';
+  if (st === 'completada' && b.actualDuration) {
+    durationExtra = `<div class="modal-row"><span class="modal-ico">⏱</span><div>
+      <div class="modal-lbl">Duración real</div><div class="modal-val">${b.actualDuration} min</div></div></div>`;
+  }
+
   document.getElementById('modalContent').innerHTML = `
     <div class="modal-row"><span class="modal-ico">${b.svcIcon||'📋'}</span><div>
       <div class="modal-lbl">Servicio</div><div class="modal-val">${b.svcName}</div></div></div>
@@ -812,27 +858,114 @@ function openModal(id) {
     <div class="modal-row"><span class="modal-ico">💰</span><div>
       <div class="modal-lbl">Precio estimado</div><div class="modal-val">₡${(b.svcPrice||0).toLocaleString()}</div></div></div>
     <div class="modal-row"><span class="modal-ico">🔖</span><div>
-      <div class="modal-lbl">Estado</div><div class="modal-val" style="text-transform:capitalize">${b.status||'confirmada'}</div></div></div>`;
+      <div class="modal-lbl">Estado</div><div class="modal-val"><span class="status-chip ${chipClass}">${chipLabel}</span></div></div></div>
+    ${durationExtra}`;
 
-  document.getElementById('modalActions').innerHTML = `
-    <button class="modal-btn primary" onclick="markStatus('${b.id}','completada')">✓ Completada</button>
-    <button class="modal-btn danger"  onclick="markStatus('${b.id}','cancelada')">Cancelar</button>`;
-
+  let actionsHtml = '';
+  if (st === 'confirmada') {
+    actionsHtml = `
+      <button class="modal-btn start" onclick="iniciarCita('${b.id}')">▶ Iniciar atención</button>
+      <button class="modal-btn danger"  onclick="markStatus('${b.id}','cancelada')">✗ Cancelar cita</button>`;
+  } else if (st === 'en proceso') {
+    actionsHtml = `
+      <div style="text-align:center;margin-bottom:.5rem">
+        <div class="timer-label">Tiempo transcurrido</div>
+        <div class="timer-big" id="modal-timer-${b.id}">${formatElapsed(getTimerElapsed(b.id))}</div>
+      </div>
+      <button class="modal-btn stop" onclick="terminarCita('${b.id}')">✓ Terminar atención</button>
+      <button class="modal-btn danger"  onclick="markStatus('${b.id}','cancelada')">✗ Cancelar cita</button>`;
+  } else if (st === 'completada') {
+    actionsHtml = `<div style="text-align:center;color:var(--muted);font-size:.85rem">Cita completada ✓</div>`;
+  } else if (st === 'cancelada') {
+    actionsHtml = `<div style="text-align:center;color:var(--muted);font-size:.85rem">Cita cancelada</div>`;
+  }
+  document.getElementById('modalActions').innerHTML = actionsHtml;
   document.getElementById('modalOverlay').classList.remove('hidden');
+
+  if (st === 'en proceso') {
+    if (_modalTimerInterval) clearInterval(_modalTimerInterval);
+    _modalTimerInterval = setInterval(() => {
+      const el = document.getElementById('modal-timer-' + b.id);
+      if (!el) { clearInterval(_modalTimerInterval); _modalTimerInterval = null; return; }
+      el.textContent = formatElapsed(getTimerElapsed(b.id));
+    }, 1000);
+  }
 }
 function closeModal(e) { if (e.target === document.getElementById('modalOverlay')) closeModalDirect(); }
-function closeModalDirect() { document.getElementById('modalOverlay').classList.add('hidden'); }
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.add('hidden');
+  if (_modalTimerInterval) { clearInterval(_modalTimerInterval); _modalTimerInterval = null; }
+}
 
 // ═══════════════════════════════════
 // ACTIONS
 // ═══════════════════════════════════
+let _modalTimerInterval = null;
+let _tlTimerInterval = null;
+
+function formatElapsed(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function getTimerElapsed(id) {
+  const start = localStorage.getItem('mc_timer_' + id);
+  if (!start) return 0;
+  return Math.floor((Date.now() - parseInt(start)) / 1000);
+}
+
+async function iniciarCita(id) {
+  localStorage.setItem('mc_timer_' + id, Date.now().toString());
+  const bookings = getBookings();
+  const idx = bookings.findIndex(b => b.id === id);
+  if (idx !== -1) { bookings[idx].status = 'en proceso'; _cachedBookings = bookings; saveBookings(bookings); }
+  updateBookingInSheets(id, { status: 'en proceso' });
+  if (_tlTimerInterval) { clearInterval(_tlTimerInterval); _tlTimerInterval = null; }
+  loadView();
+  openModal(id);
+}
+
+async function terminarCita(id) {
+  const elapsed = getTimerElapsed(id);
+  const minutes = Math.max(1, Math.round(elapsed / 60));
+  localStorage.removeItem('mc_timer_' + id);
+  if (_modalTimerInterval) { clearInterval(_modalTimerInterval); _modalTimerInterval = null; }
+  if (_tlTimerInterval) { clearInterval(_tlTimerInterval); _tlTimerInterval = null; }
+  const bookings = getBookings();
+  const idx = bookings.findIndex(b => b.id === id);
+  if (idx !== -1) {
+    bookings[idx].status = 'completada';
+    bookings[idx].actualDuration = minutes;
+    _cachedBookings = bookings;
+    saveBookings(bookings);
+  }
+  updateBookingInSheets(id, { status: 'completada', actualDuration: minutes });
+  closeModalDirect();
+  loadView();
+}
+
+async function updateBookingInSheets(id, updates) {
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'updateBooking', id, updates }),
+    });
+  } catch(e) { /* silent — status already saved locally */ }
+}
+
 function markStatus(id, status, e) {
   if (e) e.stopPropagation();
   const bookings = getBookings();
   const idx = bookings.findIndex(b => b.id === id);
   if (idx === -1) return;
   bookings[idx].status = status;
+  _cachedBookings = bookings;
   saveBookings(bookings);
+  updateBookingInSheets(id, { status });
   closeModalDirect();
   loadView();
 }
@@ -840,7 +973,7 @@ function markStatus(id, status, e) {
 // ═══════════════════════════════════
 // STORAGE
 // ═══════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjG17kUP-jjH0Z4Ub5qGUajbwY8tbgYpB8hPjzJDDzeh2v0biXtoiuaX91B_6Qkn18xQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqwrO-SKpfCk13vrflo_Duauh4BjN-s9U0Lk32bHeOMy_31IcgwtuJO1b7gQcP3_uWpQ/exec';
 let _cachedBookings = null;
 
 async function fetchBookingsFromSheets(retries = 3) {

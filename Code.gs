@@ -76,6 +76,12 @@ function doPost(e) {
         .createTextOutput(JSON.stringify({ ok: true, bookings }))
         .setMimeType(ContentService.MimeType.JSON);
     }
+    if (data.action === 'updateBooking') {
+      const result = updateBooking(data.id, data.updates);
+      return ContentService
+        .createTextOutput(JSON.stringify({ ok: true, ...result }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     const result = processBooking(data);
     return ContentService
       .createTextOutput(JSON.stringify({ ok: true, ...result }))
@@ -230,6 +236,20 @@ function getAvailableSlots(dateStr, empId, durationMin) {
   return slots;
 }
 
+function updateBooking(id, updates) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.SHEET_NAME);
+  if (!sheet) return { updated: false };
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(id)) {
+      if (updates.status         !== undefined) sheet.getRange(i+1, 12).setValue(updates.status);
+      if (updates.actualDuration !== undefined) sheet.getRange(i+1, 15).setValue(updates.actualDuration);
+      return { updated: true };
+    }
+  }
+  return { updated: false, error: 'not found' };
+}
+
 function getAllBookings() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.SHEET_NAME);
   if (!sheet) return [];
@@ -259,8 +279,9 @@ function getAllBookings() {
       clientPhone: row[8],
       clientEmail: row[9],
       clientNotes: row[10],
-      status:      row[11] || 'confirmada',
-      createdAt:   row[13],
+      status:         row[11] || 'confirmada',
+      createdAt:      row[13],
+      actualDuration: row[14] || null,
     };
   });
 }
