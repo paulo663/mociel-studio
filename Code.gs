@@ -240,9 +240,13 @@ function getAllBookings() {
     if (timeVal instanceof Date) {
       timeVal = Utilities.formatDate(timeVal, CONFIG.TIMEZONE, 'HH:mm');
     }
+    let dateVal = row[1];
+    if (dateVal instanceof Date) {
+      dateVal = Utilities.formatDate(dateVal, CONFIG.TIMEZONE, 'yyyy-MM-dd');
+    }
     return {
       id:          row[0],
-      date:        row[1],
+      date:        dateVal,
       time:        timeVal,
       duration:    row[3],
       svcName:     row[4],

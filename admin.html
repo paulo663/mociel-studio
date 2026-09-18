@@ -505,11 +505,15 @@ function loadView() {
     const upcoming = all
       .filter(b => {
         if (!CU.owner && !CU.manager && b.empId !== CU.id && b.empId !== 'any') return false;
-        const d = new Date(b.date);
+        const d = /^\d{4}-\d{2}-\d{2}$/.test(b.date) ? new Date(b.date + 'T00:00:00') : new Date(b.date);
         const today = new Date(); today.setHours(0,0,0,0);
         return d >= today && b.status !== 'cancelada';
       })
-      .sort((a,b) => new Date(a.date) - new Date(b.date) || a.time.localeCompare(b.time));
+      .sort((a,b) => {
+        const da = /^\d{4}-\d{2}-\d{2}$/.test(a.date) ? new Date(a.date+'T00:00:00') : new Date(a.date);
+        const db = /^\d{4}-\d{2}-\d{2}$/.test(b.date) ? new Date(b.date+'T00:00:00') : new Date(b.date);
+        return da - db || (a.time||'').localeCompare(b.time||'');
+      });
     renderUpcoming(upcoming);
     document.getElementById('pageTitle').textContent = 'Próximas citas';
   }
@@ -523,10 +527,20 @@ function loadView() {
 // ═══════════════════════════════════
 // FILTER
 // ═══════════════════════════════════
+function toLocalDateStr(d) {
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function bookingDateStr(b) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(b.date)) return b.date;
+  const d = new Date(b.date);
+  return isNaN(d) ? b.date : d.toDateString();
+}
 function filterBookings(all) {
-  const dstr = SEL_DATE.toDateString();
+  const dstr = toLocalDateStr(SEL_DATE);
   return all.filter(b => {
-    if (b.date !== dstr) return false;
+    const bd = bookingDateStr(b);
+    if (bd !== dstr && new Date(bd).toDateString() !== SEL_DATE.toDateString()) return false;
     if (!CU.owner && !CU.manager && b.empId !== CU.id && b.empId !== 'any') return false;
     if ((CU.owner || CU.manager) && SEL_EMP !== 'all' && b.empId !== SEL_EMP && b.empId !== 'any') return false;
     return true;
