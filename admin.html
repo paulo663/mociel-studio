@@ -826,7 +826,7 @@ function bookingCard(b) {
 // MODAL
 // ═══════════════════════════════════
 function openModal(id) {
-  const b = getBookings().find(x => x.id === id);
+  const b = getBookings().find(x => String(x.id) === String(id));
   if (!b) return;
   const emp = b.empId==='any'?'Sin preferencia':b.empName||b.empId;
   const st = b.status || 'confirmada';
@@ -922,7 +922,7 @@ function getTimerElapsed(id) {
 async function iniciarCita(id) {
   localStorage.setItem('mc_timer_' + id, Date.now().toString());
   const bookings = getBookings();
-  const idx = bookings.findIndex(b => b.id === id);
+  const idx = bookings.findIndex(b => String(b.id) === String(id));
   if (idx !== -1) { bookings[idx].status = 'en proceso'; _cachedBookings = bookings; saveBookings(bookings); }
   updateBookingInSheets(id, { status: 'en proceso' });
   if (_tlTimerInterval) { clearInterval(_tlTimerInterval); _tlTimerInterval = null; }
@@ -937,7 +937,7 @@ async function terminarCita(id) {
   if (_modalTimerInterval) { clearInterval(_modalTimerInterval); _modalTimerInterval = null; }
   if (_tlTimerInterval) { clearInterval(_tlTimerInterval); _tlTimerInterval = null; }
   const bookings = getBookings();
-  const idx = bookings.findIndex(b => b.id === id);
+  const idx = bookings.findIndex(b => String(b.id) === String(id));
   if (idx !== -1) {
     bookings[idx].status = 'completada';
     bookings[idx].actualDuration = minutes;
@@ -962,7 +962,7 @@ async function updateBookingInSheets(id, updates) {
 function markStatus(id, status, e) {
   if (e) e.stopPropagation();
   const bookings = getBookings();
-  const idx = bookings.findIndex(b => b.id === id);
+  const idx = bookings.findIndex(b => String(b.id) === String(id));
   if (idx === -1) return;
   bookings[idx].status = status;
   _cachedBookings = bookings;
