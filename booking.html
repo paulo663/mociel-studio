@@ -755,9 +755,11 @@ async function submitBooking() {
   storeBooking(booking);
 
   if (CFG.APPS_SCRIPT_URL) {
-    try {
-      fetch(CFG.APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(booking) });
-    } catch(e) { /* Google Calendar sync failed silently */ }
+    fetch(CFG.APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(booking),
+    }).catch(() => {});
   }
 
   buildConfirmation(booking);
