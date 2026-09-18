@@ -622,7 +622,7 @@ function renderTimeline(bookings) {
         extra = `<button class="tl-quick-btn iniciar" onclick="event.stopPropagation();iniciarCita('${b.id}')">▶ Iniciar</button>`;
       } else if (st === 'en proceso') {
         const elapsed = formatElapsed(getTimerElapsed(b.id));
-        extra = `<span class="tl-quick-btn proceso" id="tl-timer-${b.id}">⏱ ${elapsed}</span>`;
+        extra = `<span class="tl-quick-btn proceso" id="tl-timer-${b.id}" style="pointer-events:none">⏱ ${elapsed}</span>`;
       }
       return `<div class="tl-event ev-${cat} ${st.replace(' ','-')}" onclick="openModal('${b.id}')">
         <div class="tl-event-svc">${b.svcName}</div>
