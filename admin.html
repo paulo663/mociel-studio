@@ -867,11 +867,16 @@ function fmtDate(d) { return `${d.getDate()} de ${MONTHS_ES[d.getMonth()]}`; }
 function fmtFull(d) { return `${DOW_ES[d.getDay()]} ${d.getDate()} de ${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`; }
 function fmtTime(t) {
   if (!t) return '—';
-  if (/^\d{1,2}:\d{2}/.test(String(t))) return String(t).slice(0, 5);
-  try {
-    const d = new Date(t);
-    return d.getUTCHours().toString().padStart(2,'0') + ':' + d.getUTCMinutes().toString().padStart(2,'0');
-  } catch { return String(t); }
+  let h, m;
+  if (/^\d{1,2}:\d{2}/.test(String(t))) {
+    [h, m] = String(t).slice(0, 5).split(':').map(Number);
+  } else {
+    try { const d = new Date(t); h = d.getUTCHours(); m = d.getUTCMinutes(); }
+    catch { return String(t); }
+  }
+  const ampm = h >= 12 ? 'pm' : 'am';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
 }
 function toInputDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
