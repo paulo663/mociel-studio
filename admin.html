@@ -217,6 +217,32 @@
     .modal-btn.danger { background: var(--red); border-color: var(--red); color: #fff; }
     .modal-btn:hover:not(.primary):not(.danger) { border-color: var(--cambridge); }
 
+    /* UPCOMING CARDS */
+    .up-list { display: grid; gap: .75rem; }
+    .up-date-header { font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted); padding: .6rem 0 .2rem; }
+    .up-card { background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 1px 10px rgba(30,42,53,.07); cursor: pointer; transition: box-shadow .18s; }
+    .up-card:hover { box-shadow: 0 4px 24px rgba(30,42,53,.13); }
+    .up-card.done { opacity: .5; }
+    .up-head { display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 1.2rem .75rem; border-bottom: 1px solid var(--polar); }
+    .up-emp { flex: 1; }
+    .up-emp-name { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem;
+      font-weight: 500; color: var(--dark); line-height: 1.1; }
+    .up-emp-role { font-size: .72rem; color: var(--muted); margin-top: .15rem; }
+    .up-datetime { text-align: right; flex-shrink: 0; }
+    .up-time { font-size: 1.2rem; font-weight: 600; color: var(--dark); }
+    .up-time-label { font-size: .7rem; color: var(--muted); margin-top: .1rem; }
+    .up-body { padding: .75rem 1.2rem 1rem; display: flex; align-items: flex-end;
+      justify-content: space-between; gap: .5rem; }
+    .up-info { flex: 1; }
+    .up-svc { font-size: .92rem; font-weight: 600; color: var(--text); }
+    .up-client { font-size: .8rem; color: var(--muted); margin-top: .25rem; }
+    .up-badge { font-size: .63rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; padding: .22rem .6rem; border-radius: 100px;
+      background: #E8F8EE; color: var(--green); flex-shrink: 0; align-self: flex-end; }
+
     .hidden { display: none !important; }
     .mobile-header { display: none; }
     @media(max-width:768px){
@@ -291,9 +317,9 @@
     <nav class="sb-nav">
       <div class="sb-section">Mi espacio</div>
       <div class="sb-link active" onclick="showView('agenda')"><span>📅</span> Mi agenda</div>
-      <div class="sb-link" onclick="showView('upcoming')"><span>🔜</span> Próximas citas</div>
-      <div id="ownerNav" class="hidden">
+      <div id="managerNav" class="hidden">
         <div class="sb-section">Administrar</div>
+        <div class="sb-link" onclick="showView('upcoming')"><span>🔜</span> Próximas citas</div>
         <div class="sb-link" onclick="showView('all')"><span>👥</span> Todas las citas</div>
         <div class="sb-link" onclick="showView('export')"><span>📊</span> Exportar datos</div>
       </div>
@@ -349,11 +375,11 @@
 // DATA
 // ═══════════════════════════════════
 const USERS = [
-  { id:'owner',  name:'Paulo',   role:'Administrador', av:'PZ', owner:true, pass:'1234' },
-  { id:'marta',  name:'Marta',   role:'Estilista',      av:'MA',            pass:'1234' },
-  { id:'difrani',name:'Difrani',  role:'Especialista',   av:'DI',            pass:'1234' },
-  { id:'tatiana',name:'Tatiana',  role:'Manicurista',    av:'TA',            pass:'1234' },
-  { id:'alisson',name:'Alisson',  role:'Estilista',      av:'AL',            pass:'1234' },
+  { id:'owner',  name:'Paulo',   role:'Administrador', av:'PZ', owner:true,            pass:'1234' },
+  { id:'marta',  name:'Marta',   role:'Estilista',      av:'MA',                       pass:'1234' },
+  { id:'difrani',name:'Difrani',  role:'Especialista',   av:'DI', manager:true,         pass:'1234' },
+  { id:'tatiana',name:'Tatiana',  role:'Manicurista',    av:'TA',                       pass:'1234' },
+  { id:'alisson',name:'Alisson',  role:'Estilista',      av:'AL',                       pass:'1234' },
 ];
 
 const CAT_MAP = {
@@ -435,8 +461,8 @@ function enter(user) {
   document.getElementById('sbRole').textContent = user.role;
   document.getElementById('mobUserName').textContent = user.name;
 
-  if (user.owner) {
-    document.getElementById('ownerNav').classList.remove('hidden');
+  if (user.owner || user.manager) {
+    document.getElementById('managerNav').classList.remove('hidden');
     document.getElementById('empTabs').classList.remove('hidden');
     buildEmpTabs();
   }
@@ -478,7 +504,7 @@ function loadView() {
     document.getElementById('dateBar').style.display = 'none';
     const upcoming = all
       .filter(b => {
-        if (!CU.owner && b.empId !== CU.id && b.empId !== 'any') return false;
+        if (!CU.owner && !CU.manager && b.empId !== CU.id && b.empId !== 'any') return false;
         const d = new Date(b.date);
         const today = new Date(); today.setHours(0,0,0,0);
         return d >= today && b.status !== 'cancelada';
@@ -501,8 +527,8 @@ function filterBookings(all) {
   const dstr = SEL_DATE.toDateString();
   return all.filter(b => {
     if (b.date !== dstr) return false;
-    if (!CU.owner && b.empId !== CU.id && b.empId !== 'any') return false;
-    if (CU.owner && SEL_EMP !== 'all' && b.empId !== SEL_EMP && b.empId !== 'any') return false;
+    if (!CU.owner && !CU.manager && b.empId !== CU.id && b.empId !== 'any') return false;
+    if ((CU.owner || CU.manager) && SEL_EMP !== 'all' && b.empId !== SEL_EMP && b.empId !== 'any') return false;
     return true;
   });
 }
@@ -588,18 +614,47 @@ function renderUpcoming(bookings) {
     return;
   }
 
-  let html = '<div class="bk-list">';
+  let html = '<div class="up-list">';
   let lastDate = '';
   bookings.forEach(b => {
     if (b.date !== lastDate) {
       lastDate = b.date;
       const d = new Date(b.date);
-      html += `<div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.5rem 0 .25rem">${fmtFull(d)}</div>`;
+      const isToday = d.toDateString() === new Date().toDateString();
+      const label = isToday ? 'Hoy — ' + fmtFull(d) : fmtFull(d);
+      html += `<div class="up-date-header">📅 ${label}</div>`;
     }
-    html += bookingCard(b);
+    html += upcomingCard(b);
   });
   html += '</div>';
   container.innerHTML = html;
+}
+
+function upcomingCard(b) {
+  const emp = b.empId === 'any' ? 'Sin preferencia' : (b.empName || b.empId);
+  const empUser = USERS.find(u => u.id === b.empId);
+  const empRole = empUser?.role || '';
+  const badge = b.status === 'confirmada' ? `<span class="up-badge">Confirmada</span>` : '';
+  return `
+    <div class="up-card ${b.status==='completada'?'done':''}" onclick="openModal('${b.id}')">
+      <div class="up-head">
+        <div class="up-emp">
+          <div class="up-emp-name">${emp}</div>
+          ${empRole ? `<div class="up-emp-role">${empRole}</div>` : ''}
+        </div>
+        <div class="up-datetime">
+          <div class="up-time">⏰ ${b.time}</div>
+          <div class="up-time-label">${b.duration ? b.duration + ' min' : ''}</div>
+        </div>
+      </div>
+      <div class="up-body">
+        <div class="up-info">
+          <div class="up-svc">${b.svcName}</div>
+          <div class="up-client">👤 ${b.clientName}${b.clientPhone ? ' · ' + b.clientPhone : ''}</div>
+        </div>
+        ${badge}
+      </div>
+    </div>`;
 }
 
 // ═══════════════════════════════════
