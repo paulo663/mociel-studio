@@ -240,8 +240,31 @@
 <div id="loginScreen">
   <img src="logo.png" class="login-logo" alt="Mon Ciel Studio">
   <h1 class="login-h">Bienvenida a tu agenda</h1>
-  <p class="login-sub">Selecciona tu nombre para entrar</p>
+  <p class="login-sub" id="loginSub">Selecciona tu nombre para entrar</p>
   <div class="login-grid" id="loginGrid"></div>
+  <div id="passBox" style="display:none;width:100%;max-width:320px;margin-top:1.5rem">
+    <div style="font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:.6rem;text-align:center" id="passLabel"></div>
+    <input id="passInput" type="password" placeholder="Contraseña"
+      style="width:100%;padding:.85rem 1rem;border-radius:10px;border:1.5px solid rgba(255,255,255,.15);
+             background:rgba(255,255,255,.07);color:#fff;font-family:'Jost',sans-serif;font-size:.95rem;
+             outline:none;letter-spacing:.05em"
+      onkeydown="if(event.key==='Enter')checkPass()">
+    <div id="passErr" style="color:#e74c3c;font-size:.78rem;margin-top:.5rem;text-align:center;display:none">
+      Contraseña incorrecta
+    </div>
+    <button onclick="checkPass()"
+      style="width:100%;margin-top:.8rem;padding:.85rem;border-radius:10px;border:none;
+             background:var(--gold);color:#fff;font-family:'Jost',sans-serif;font-size:.9rem;
+             font-weight:600;cursor:pointer">
+      Entrar →
+    </button>
+    <button onclick="cancelPass()"
+      style="width:100%;margin-top:.5rem;padding:.6rem;border-radius:10px;border:none;
+             background:transparent;color:rgba(255,255,255,.3);font-family:'Jost',sans-serif;
+             font-size:.82rem;cursor:pointer">
+      ← Volver
+    </button>
+  </div>
 </div>
 
 <!-- APP -->
@@ -326,11 +349,11 @@
 // DATA
 // ═══════════════════════════════════
 const USERS = [
-  { id:'owner',  name:'Paulo',   role:'Administrador', av:'PZ', owner:true },
-  { id:'marta',  name:'Marta',   role:'Estilista',      av:'MA' },
-  { id:'difrani',name:'Difrani',  role:'Especialista',   av:'DI' },
-  { id:'tatiana',name:'Tatiana',  role:'Estilista',      av:'TA' },
-  { id:'alisson',name:'Alisson',  role:'Nail artist',    av:'AL' },
+  { id:'owner',  name:'Paulo',   role:'Administrador', av:'PZ', owner:true, pass:'1234' },
+  { id:'marta',  name:'Marta',   role:'Estilista',      av:'MA',            pass:'1234' },
+  { id:'difrani',name:'Difrani',  role:'Especialista',   av:'DI',            pass:'1234' },
+  { id:'tatiana',name:'Tatiana',  role:'Manicurista',    av:'TA',            pass:'1234' },
+  { id:'alisson',name:'Alisson',  role:'Estilista',      av:'AL',            pass:'1234' },
 ];
 
 const CAT_MAP = {
@@ -361,14 +384,45 @@ document.addEventListener('DOMContentLoaded', () => {
   if (saved) { const u = USERS.find(u => u.id === saved); if (u) enter(u); }
 });
 
+let PENDING_USER = null;
+
 function buildLoginGrid() {
   document.getElementById('loginGrid').innerHTML = USERS.map(u => `
-    <div class="login-card ${u.owner?'owner':''}" onclick="enter(USERS.find(x=>x.id==='${u.id}'))">
+    <div class="login-card ${u.owner?'owner':''}" onclick="selectUser('${u.id}')">
       <div class="login-av ${u.owner?'gold':''}">${u.av}</div>
       <div class="login-name">${u.name}</div>
       <div class="login-role">${u.role}</div>
     </div>`
   ).join('');
+}
+
+function selectUser(id) {
+  PENDING_USER = USERS.find(u => u.id === id);
+  document.getElementById('loginGrid').style.display = 'none';
+  document.getElementById('loginSub').style.display = 'none';
+  document.getElementById('passLabel').textContent = 'Contraseña de ' + PENDING_USER.name;
+  document.getElementById('passBox').style.display = 'block';
+  document.getElementById('passErr').style.display = 'none';
+  document.getElementById('passInput').value = '';
+  setTimeout(() => document.getElementById('passInput').focus(), 100);
+}
+
+function checkPass() {
+  const val = document.getElementById('passInput').value;
+  if (val === PENDING_USER.pass) {
+    enter(PENDING_USER);
+  } else {
+    document.getElementById('passErr').style.display = 'block';
+    document.getElementById('passInput').value = '';
+    document.getElementById('passInput').focus();
+  }
+}
+
+function cancelPass() {
+  PENDING_USER = null;
+  document.getElementById('passBox').style.display = 'none';
+  document.getElementById('loginGrid').style.display = 'grid';
+  document.getElementById('loginSub').style.display = 'block';
 }
 
 function enter(user) {
