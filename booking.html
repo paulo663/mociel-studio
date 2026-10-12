@@ -504,11 +504,10 @@ const SERVICES = [
 ];
 
 const EMPLOYEES = [
-  { id:'any',    name:'Sin preferencia', role:'Primer disponible', av:'✦',   any:true },
-  { id:'marta',  name:'Marta',           role:'Estilista',         av:'MA',  cats:['Cabello','Peinado','Maquillaje'] },
-  { id:'difrani',name:'Difrani',          role:'Estilista',         av:'DI',  cats:['Cabello','Peinado','Maquillaje'] },
-  { id:'tatiana',name:'Tatiana',          role:'Manicurista',       av:'TA',  cats:['Uñas'] },
-  { id:'alisson',name:'Alisson',          role:'Estilista',         av:'AL',  cats:['Cabello','Peinado','Maquillaje'] },
+  { id:'any',    name:'Sin preferencia', role:'Primer disponible', av:'✦',   any:true,                                   days:[1,2,3,4,5,6] },
+  { id:'marta',  name:'Marta',           role:'Estilista',         av:'MA',  cats:['Cabello','Peinado','Maquillaje'],    days:[1,2,3,4,5,6] },
+  { id:'difrani',name:'Difrani',          role:'Estilista',         av:'DI',  cats:['Cabello','Peinado','Maquillaje'],    days:[5] },
+  { id:'tatiana',name:'Tatiana',          role:'Manicurista',       av:'TA',  cats:['Uñas'],                             days:[1,2,3,4,5,6] },
 ];
 
 // ═══════════════════════════════════════
@@ -602,8 +601,14 @@ function buildEmps() {
 
 function pickEmp(id, el) {
   S.employee = EMPLOYEES.find(e => e.id === id);
+  // Si el día ya seleccionado no aplica para esta empleada, limpiarlo
+  if (S.date && S.employee?.days && !S.employee.days.includes(S.date.getDay())) {
+    S.date = null;
+    S.time = null;
+  }
   document.querySelectorAll('.emp-card').forEach(c => c.classList.remove('sel'));
   el.classList.add('sel');
+  buildCal();
   syncNav();
 }
 
@@ -619,6 +624,7 @@ function buildCal() {
   const today = new Date(); today.setHours(0,0,0,0);
   const first = new Date(y, m, 1);
   const last  = new Date(y, m+1, 0);
+  const empDays = S.employee?.days || CFG.OPEN_DAYS;
 
   document.getElementById('calLabel').textContent = `${MONTHS_ES[m]} ${y}`;
 
@@ -628,11 +634,12 @@ function buildCal() {
   for (let d = 1; d <= last.getDate(); d++) {
     const dt = new Date(y, m, d);
     const past    = dt < today;
-    const sunday  = dt.getDay() === 0;
+    const offDay  = !empDays.includes(dt.getDay());
     const isToday = dt.toDateString() === today.toDateString();
     const isSel   = S.date && dt.toDateString() === S.date.toDateString();
-    const cls = [past?'past':'', sunday?'sunday':'', isToday&&!isSel?'today':'', isSel?'sel':''].filter(Boolean).join(' ');
-    const cb  = (!past && !sunday) ? `onclick="pickDate(${y},${m},${d})"` : '';
+    const disabled = past || offDay;
+    const cls = [past?'past':'', offDay?'sunday':'', isToday&&!isSel?'today':'', isSel?'sel':''].filter(Boolean).join(' ');
+    const cb  = !disabled ? `onclick="pickDate(${y},${m},${d})"` : '';
     html += `<div class="cal-d ${cls}" ${cb}>${d}</div>`;
   }
   document.getElementById('calGrid').innerHTML = html;
