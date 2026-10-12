@@ -155,6 +155,7 @@
     .emp-any-av { background: transparent; color: var(--cambridge); font-size: 1.6rem; }
     .emp-name { font-weight: 500; font-size: .9rem; color: var(--text); }
     .emp-role { font-size: .73rem; color: var(--muted); margin-top: .15rem; }
+    .emp-note { font-size: .68rem; color: var(--cambridge); margin-top: .45rem; line-height: 1.4; }
 
     /* ── CALENDAR ── */
     .cal-wrap { background: #fff; border-radius: var(--r); padding: 1.4rem; box-shadow: var(--sh); }
@@ -505,9 +506,9 @@ const SERVICES = [
 
 const EMPLOYEES = [
   { id:'any',    name:'Sin preferencia', role:'Primer disponible', av:'✦',   any:true,                                   days:[1,2,3,4,5,6] },
-  { id:'marta',  name:'Marta',           role:'Estilista',         av:'MA',  cats:['Cabello','Peinado','Maquillaje'],    days:[1,2,3,4,5,6] },
-  { id:'difrani',name:'Difrani',          role:'Estilista',         av:'DI',  cats:['Cabello','Peinado','Maquillaje'],    days:[5] },
-  { id:'tatiana',name:'Tatiana',          role:'Manicurista',       av:'TA',  cats:['Uñas'],                             days:[1,2,3,4,5,6] },
+  { id:'marta',  name:'Marta',           role:'Estilista',         av:'MA',  cats:['Cabello','Peinado','Maquillaje'],    days:[1,2,3,4,5,6], note:'Lunes a Sábado' },
+  { id:'difrani',name:'Difrani',          role:'Estilista',         av:'DI',  cats:['Cabello','Peinado','Maquillaje'],    days:[5],            note:'Disponible los viernes · ¿Otro día? Consúltanos por WhatsApp' },
+  { id:'tatiana',name:'Tatiana',          role:'Manicurista',       av:'TA',  cats:['Uñas'],                             days:[1,2,3,4,5,6], note:'Lunes a Sábado' },
 ];
 
 // ═══════════════════════════════════════
@@ -595,6 +596,7 @@ function buildEmps() {
       <div class="emp-avatar ${e.any?'emp-any-av':''}">${e.av}</div>
       <div class="emp-name">${e.name}</div>
       <div class="emp-role">${e.role}</div>
+      ${e.note ? `<div class="emp-note">${e.note}</div>` : ''}
     </div>`
   ).join('');
 }
