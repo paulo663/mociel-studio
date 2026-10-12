@@ -836,18 +836,30 @@ function buildCalendarLinks(b) {
   const details  = `Cita con ${b.empId !== 'any' ? b.empName : 'Mon Ciel Studio'}`;
   const location = 'Mon Ciel Studio, Dominical, Costa Rica';
 
-  // ICS para Apple Calendar
-  const ics = [
-    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Mon Ciel Studio//ES',
+  // ICS para Apple Calendar (campos UID y DTSTAMP requeridos por RFC 5545)
+  const dtstamp = toIcalDt(new Date());
+  const uid = `${b.id}@moncielstudio.com`;
+  const icsText = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Mon Ciel Studio//ES',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
     'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${dtstamp}`,
     `DTSTART:${startStr}`,
     `DTEND:${endStr}`,
     `SUMMARY:${title}`,
     `DESCRIPTION:${details}`,
     `LOCATION:${location}`,
-    'END:VEVENT','END:VCALENDAR'
+    'END:VEVENT',
+    'END:VCALENDAR'
   ].join('\r\n');
-  const icsUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+
+  // Blob URL para que funcione el atributo download en iOS 14.5+
+  const blob = new Blob([icsText], { type: 'text/calendar;charset=utf-8' });
+  const icsUrl = URL.createObjectURL(blob);
 
   // Google Calendar URL
   const gcUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE`
