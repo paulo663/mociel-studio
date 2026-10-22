@@ -19,30 +19,6 @@
     body { font-family: 'Jost', sans-serif; background: var(--off); color: var(--text);
       -webkit-font-smoothing: antialiased; min-height: 100dvh; }
 
-    /* ── LOGIN SCREEN ── */
-    #loginScreen {
-      position: fixed; inset: 0; background: var(--dark);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 100; padding: 2rem;
-    }
-    .login-logo { height: 52px; width: 160px; object-fit: contain; filter: invert(1); margin-bottom: 2rem; }
-    .login-h { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 300;
-      color: #fff; margin-bottom: .4rem; text-align: center; }
-    .login-sub { font-size: .85rem; color: rgba(255,255,255,.4); margin-bottom: 2.5rem; text-align: center; }
-    .login-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: .8rem; width: 100%; max-width: 480px; }
-    .login-card { background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.1);
-      border-radius: 14px; padding: 1.4rem 1rem; text-align: center; cursor: pointer;
-      transition: all .2s; }
-    .login-card:hover { background: rgba(255,255,255,.12); border-color: var(--gold); transform: translateY(-2px); }
-    .login-card.owner { border-color: rgba(201,148,58,.3); background: rgba(201,148,58,.08); }
-    .login-av { width: 52px; height: 52px; border-radius: 50%;
-      background: rgba(255,255,255,.1); display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: rgba(255,255,255,.7);
-      margin: 0 auto .8rem; }
-    .login-av.gold { background: rgba(201,148,58,.2); color: var(--gold); }
-    .login-name { font-size: .9rem; font-weight: 500; color: #fff; margin-bottom: .15rem; }
-    .login-role { font-size: .72rem; color: rgba(255,255,255,.35); }
 
     /* ── LAYOUT ── */
     .app { display: none; }
@@ -279,36 +255,7 @@
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen">
-  <img src="logo.png" class="login-logo" alt="Mon Ciel Studio">
-  <h1 class="login-h">Bienvenida a tu horario</h1>
-  <p class="login-sub" id="loginSub">Selecciona tu nombre para entrar</p>
-  <div class="login-grid" id="loginGrid"></div>
-  <div id="passBox" style="display:none;width:100%;max-width:320px;margin-top:1.5rem">
-    <div style="font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:.6rem;text-align:center" id="passLabel"></div>
-    <input id="passInput" type="password" placeholder="Contraseña"
-      style="width:100%;padding:.85rem 1rem;border-radius:10px;border:1.5px solid rgba(255,255,255,.15);
-             background:rgba(255,255,255,.07);color:#fff;font-family:'Jost',sans-serif;font-size:.95rem;
-             outline:none;letter-spacing:.05em"
-      onkeydown="if(event.key==='Enter')checkPass()">
-    <div id="passErr" style="color:#e74c3c;font-size:.78rem;margin-top:.5rem;text-align:center;display:none">
-      Contraseña incorrecta
-    </div>
-    <button onclick="checkPass()"
-      style="width:100%;margin-top:.8rem;padding:.85rem;border-radius:10px;border:none;
-             background:var(--gold);color:#fff;font-family:'Jost',sans-serif;font-size:.9rem;
-             font-weight:600;cursor:pointer">
-      Entrar →
-    </button>
-    <button onclick="cancelPass()"
-      style="width:100%;margin-top:.5rem;padding:.6rem;border-radius:10px;border:none;
-             background:transparent;color:rgba(255,255,255,.3);font-family:'Jost',sans-serif;
-             font-size:.82rem;cursor:pointer">
-      ← Volver
-    </button>
-  </div>
-</div>
+<!-- LOGIN (removed) -->
 
 <!-- APP -->
 <div class="app" id="app">
@@ -394,14 +341,6 @@
 // ═══════════════════════════════════
 // DATA
 // ═══════════════════════════════════
-const USERS = [
-  { id:'owner',   name:'Paulo',   role:'Administrador',  av:'PZ', owner:true,           pass:'2005' },
-  { id:'beatriz', name:'Beatriz', role:'Administradora', av:'BZ', owner:true,           pass:'2426' },
-  { id:'difrani', name:'Difrani', role:'Especialista',   av:'DI', manager:true,         pass:'1234' },
-  { id:'marta',   name:'Marta',   role:'Estilista',      av:'MA',                       pass:'1234' },
-  { id:'tatiana', name:'Tatiana', role:'Manicurista',    av:'TA',                       pass:'1234' },
-  { id:'alisson', name:'Alisson', role:'Estilista',      av:'AL',                       pass:'1234' },
-];
 
 const CAT_MAP = {
   'corte':'cabello','coloracion':'cabello','tratamiento':'cabello','lavado':'cabello',
@@ -423,80 +362,28 @@ let CURRENT_VIEW = 'agenda';
 // INIT
 // ═══════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  buildLoginGrid();
   updatePageDate();
-
-  // Try to restore session
-  const saved = sessionStorage.getItem('mc_admin_user');
-  if (saved) { const u = USERS.find(u => u.id === saved); if (u) enter(u); }
+  enter();
 });
 
-let PENDING_USER = null;
-
-function buildLoginGrid() {
-  document.getElementById('loginGrid').innerHTML = USERS.map(u => `
-    <div class="login-card ${u.owner?'owner':''}" onclick="selectUser('${u.id}')">
-      <div class="login-av ${u.owner?'gold':''}">${u.av}</div>
-      <div class="login-name">${u.name}</div>
-      <div class="login-role">${u.role}</div>
-    </div>`
-  ).join('');
-}
-
-function selectUser(id) {
-  PENDING_USER = USERS.find(u => u.id === id);
-  document.getElementById('loginGrid').style.display = 'none';
-  document.getElementById('loginSub').style.display = 'none';
-  document.getElementById('passLabel').textContent = 'Contraseña de ' + PENDING_USER.name;
-  document.getElementById('passBox').style.display = 'block';
-  document.getElementById('passErr').style.display = 'none';
-  document.getElementById('passInput').value = '';
-  setTimeout(() => document.getElementById('passInput').focus(), 100);
-}
-
-function checkPass() {
-  const val = document.getElementById('passInput').value;
-  if (val === PENDING_USER.pass) {
-    enter(PENDING_USER);
-  } else {
-    document.getElementById('passErr').style.display = 'block';
-    document.getElementById('passInput').value = '';
-    document.getElementById('passInput').focus();
-  }
-}
-
-function cancelPass() {
-  PENDING_USER = null;
-  document.getElementById('passBox').style.display = 'none';
-  document.getElementById('loginGrid').style.display = 'grid';
-  document.getElementById('loginSub').style.display = 'block';
-}
-
-function enter(user) {
-  CU = user;
-  sessionStorage.setItem('mc_admin_user', user.id);
-  document.getElementById('loginScreen').style.display = 'none';
+function enter() {
   document.getElementById('app').classList.add('visible');
-  document.getElementById('sbAv').textContent = user.av;
-  document.getElementById('sbName').textContent = user.name;
-  document.getElementById('sbRole').textContent = user.role;
-  document.getElementById('mobUserName').textContent = user.name;
+  document.getElementById('sbAv').textContent = 'MC';
+  document.getElementById('sbName').textContent = 'Mon Ciel Studio';
+  document.getElementById('sbRole').textContent = 'Administración';
+  document.getElementById('mobUserName').textContent = 'Admin';
 
-  if (user.owner || user.manager) {
-    document.getElementById('managerNav').classList.remove('hidden');
-    document.getElementById('empTabs').classList.remove('hidden');
-    buildEmpTabs();
-  }
+  document.getElementById('managerNav').classList.remove('hidden');
+  document.getElementById('empTabs').classList.remove('hidden');
+  buildEmpTabs();
 
-  loadView(); // show cached data immediately
-  fetchBookingsFromSheets().then(() => loadView()); // update with fresh data
+  SEL_EMP = 'all';
+  loadView();
+  fetchBookingsFromSheets().then(() => loadView());
 }
 
 function logout() {
-  sessionStorage.removeItem('mc_admin_user');
-  CU = null;
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('app').classList.remove('visible');
+  window.location.reload();
 }
 
 // ═══════════════════════════════════
@@ -519,14 +406,12 @@ function loadView() {
     const filtered = filterBookings(all);
     renderStats(filtered);
     renderTimeline(filtered);
-    document.getElementById('pageTitle').textContent =
-      v === 'all' ? 'Todas las citas' : `Mi horario — ${fmtDate(SEL_DATE)}`;
+    document.getElementById('pageTitle').textContent = `Citas — ${fmtDate(SEL_DATE)}`;
   }
   if (v === 'upcoming') {
     document.getElementById('dateBar').style.display = 'none';
     const upcoming = all
       .filter(b => {
-        if (!CU.owner && !CU.manager && b.empId !== CU.id && !isEmpAny(b.empId)) return false;
         const d = /^\d{4}-\d{2}-\d{2}$/.test(b.date) ? new Date(b.date + 'T00:00:00') : new Date(b.date);
         const today = new Date(); today.setHours(0,0,0,0);
         return d >= today && b.status !== 'cancelada';
@@ -557,13 +442,12 @@ function isEmpAny(empId) {
   return !empId || empId === 'any' || empId === 'sin preferencia';
 }
 function filterBookings(all) {
-  const dstrISO = toLocalDateStr(SEL_DATE);   // "2026-09-18"
-  const dstrRaw = SEL_DATE.toDateString();     // "Fri Sep 18 2026"
+  const dstrISO = toLocalDateStr(SEL_DATE);
+  const dstrRaw = SEL_DATE.toDateString();
   return all.filter(b => {
     const bdate = b.date || '';
     if (bdate !== dstrISO && bdate !== dstrRaw) return false;
-    if (!CU.owner && !CU.manager && b.empId !== CU.id && !isEmpAny(b.empId)) return false;
-    if ((CU.owner || CU.manager) && SEL_EMP !== 'all' && b.empId !== SEL_EMP && !isEmpAny(b.empId)) return false;
+    if (SEL_EMP !== 'all' && b.empId !== SEL_EMP && !isEmpAny(b.empId)) return false;
     return true;
   });
 }
