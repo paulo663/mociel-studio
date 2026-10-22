@@ -810,29 +810,71 @@ blockquote em {
 /* ===== SERVICES ===== */
 
 .services {
-    background: linear-gradient(160deg, #dde4ed 0%, #ede7df 45%, #dde4ed 100%);
+    background: linear-gradient(145deg, #8fa8c8 0%, #a892b8 30%, #b89098 60%, #90a898 100%);
     position: relative;
+    overflow: hidden;
+}
+
+/* Blobs decorativos para que el glass tenga algo que difuminar */
+.services::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,148,58,.6) 0%, rgba(201,148,58,.2) 40%, transparent 70%);
+    top: -150px; left: -120px;
+    pointer-events: none;
+    z-index: 0;
+}
+.services::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(155,107,174,.55) 0%, rgba(90,116,146,.3) 50%, transparent 70%);
+    bottom: -100px; right: -100px;
+    pointer-events: none;
+    z-index: 0;
+}
+/* Blob central */
+.svc-blob-mid {
+    position: absolute;
+    width: 350px; height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,165,192,.5) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
+    gap: 1.4rem;
+    position: relative;
+    z-index: 1;
 }
+
+/* Textos del header en sección services */
+.services .section-tag { color: rgba(255,255,255,.8); }
+.services .section-title { color: #fff; text-shadow: 0 1px 12px rgba(30,42,53,.15); }
+.services .section-desc { color: rgba(255,255,255,.75); }
 
 /* ── Glassmorphism service cards ── */
 .svc-glass {
     border-radius: 20px;
-    padding: 1.6rem 1.5rem;
+    padding: 1.8rem 1.6rem;
     display: flex;
     flex-direction: column;
     gap: .5rem;
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,.65);
-    background: rgba(255,255,255,.52);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,.7);
+    background: rgba(255,255,255,.28);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 4px 24px rgba(30,42,53,.08), inset 0 1px 0 rgba(255,255,255,.5);
     transition: transform .22s ease, box-shadow .22s ease;
     cursor: default;
 }
@@ -842,7 +884,7 @@ blockquote em {
     inset: 0;
     border-radius: 20px;
     background: var(--grad);
-    opacity: .1;
+    opacity: .15;
     pointer-events: none;
 }
 .svc-glass:hover {
