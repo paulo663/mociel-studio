@@ -1,5 +1,8 @@
 /* ===== PETAL CANVAS ===== */
 (function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.getElementById('petalCanvas').style.display='none'; return;
+  }
   const canvas = document.getElementById('petalCanvas');
   const ctx = canvas.getContext('2d');
   const petals = [];
@@ -205,45 +208,6 @@ if(track){
   track.parentElement.addEventListener('mouseenter',()=>clearInterval(autoPlay));
   track.parentElement.addEventListener('mouseleave',()=>{ autoPlay=setInterval(()=>{ current=current<total-1?current+1:0; goTo(current); },4500); });
 }
-/* ===== SERVICE CARDS → WHATSAPP ===== */
-const WA_MSGS = {
-  'Corte de cabello':    'Hola Mon Ciel! Me gustaría agendar un *corte de cabello*. ¿Tienen disponibilidad?',
-  'Coloración':          'Hola Mon Ciel! Me gustaría agendar una *coloración*. ¿Tienen disponibilidad?',
-  'Tratamiento capilar': 'Hola Mon Ciel! Me gustaría hacer un *tratamiento capilar*. ¿Tienen disponibilidad?',
-  'Lavado y peinado':    'Hola Mon Ciel! Me gustaría agendar un *lavado y peinado*. ¿Tienen disponibilidad?',
-  'Manicure':            'Hola Mon Ciel! Me gustaría hacerme las uñas (*manicure*). ¿Tienen disponibilidad?',
-  'Pedicure':            'Hola Mon Ciel! Me gustaría hacerme un *pedicure*. ¿Tienen disponibilidad?',
-};
-
-document.querySelectorAll('.service-card').forEach(card=>{
-  const service = card.dataset.service;
-  const msg = WA_MSGS[service] || 'Hola Mon Ciel! 👋 Me gustaría reservar una cita. ¿Tienen disponibilidad?';
-  const url = 'https://wa.me/50688346266?text=' + encodeURIComponent(msg);
-
-  // Convert the span button to a real <a> link (works reliably on mobile Safari)
-  const btn = card.querySelector('.service-back .btn-white');
-  if(btn){
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.className = btn.className;
-    a.textContent = btn.textContent;
-    btn.replaceWith(a);
-  }
-
-  // Tapping anywhere on the card (outside the link) also opens WhatsApp
-  card.addEventListener('click', e=>{
-    if(e.target.closest('a')) return;
-    const tmp = document.createElement('a');
-    tmp.href = url;
-    tmp.target = '_blank';
-    tmp.rel = 'noopener noreferrer';
-    document.body.appendChild(tmp);
-    tmp.click();
-    document.body.removeChild(tmp);
-  });
-});
 
 
 /* ===== HERO PARALLAX ===== */

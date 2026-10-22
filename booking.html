@@ -537,10 +537,23 @@ let S = {
 // INIT
 // ═══════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
+  // Pre-select service from URL param ?svc=ID
+  const urlSvc = new URLSearchParams(window.location.search).get('svc');
+  if(urlSvc) {
+    const found = SERVICES.find(s => s.id === urlSvc);
+    if(found) {
+      S.service = found;
+      S.activeCat = found.cat;
+    }
+  }
   buildSvcs();
   buildEmps();
   buildCal();
   syncNav();
+  // Auto-advance to step 2 if service pre-selected from URL
+  if(urlSvc && S.service) {
+    setTimeout(() => goToStep(2), 120);
+  }
 });
 
 // ═══════════════════════════════════════
