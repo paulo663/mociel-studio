@@ -810,14 +810,96 @@ blockquote em {
 /* ===== SERVICES ===== */
 
 .services {
-    background: var(--white);
+    background: linear-gradient(160deg, #dde4ed 0%, #ede7df 45%, #dde4ed 100%);
+    position: relative;
 }
 
 .services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
+
+/* ── Glassmorphism service cards ── */
+.svc-glass {
+    border-radius: 20px;
+    padding: 1.6rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.65);
+    background: rgba(255,255,255,.52);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition: transform .22s ease, box-shadow .22s ease;
+    cursor: default;
+}
+.svc-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: var(--grad);
+    opacity: .1;
+    pointer-events: none;
+}
+.svc-glass:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(30,42,53,.12);
+}
+.svc-glass.popular::after {
+    content: '⭐ Popular';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--gold);
+    color: #fff;
+    font-size: .6rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    padding: .22rem .7rem;
+    border-radius: 50px;
+}
+.svc-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-bottom: .3rem;
+    flex-shrink: 0;
+}
+.svc-glass h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.18rem;
+    font-weight: 400;
+    color: #1E2A35;
+    line-height: 1.2;
+}
+.svc-glass p {
+    font-size: .78rem;
+    color: #5A7492;
+    line-height: 1.55;
+    flex: 1;
+}
+.svc-glass .svc-price {
+    font-size: .71rem;
+    font-weight: 600;
+    color: #7B90A8;
+    letter-spacing: .04em;
+    margin-top: .2rem;
+}
+.svc-glass .svc-book {
+    margin-top: .6rem;
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    color: #1E2A35;
+    text-decoration: none;
+    transition: color .18s;
+}
+.svc-glass .svc-book:hover { color: var(--gold); }
 
 .service-card {
     perspective: 1000px;
