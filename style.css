@@ -814,6 +814,7 @@ blockquote em {
     position: relative;
 }
 
+
 .services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -822,7 +823,7 @@ blockquote em {
     z-index: 1;
 }
 
-/* ── Glassmorphism service cards ── */
+/* ── Service cards celeste ── */
 .svc-glass {
     border-radius: 20px;
     padding: 1.8rem 1.6rem;
@@ -831,8 +832,8 @@ blockquote em {
     gap: .5rem;
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(90,116,146,.15);
-    background: #fff;
+    border: 1px solid rgba(176,195,214,.4);
+    background: #dce8f2;
     box-shadow: 0 2px 16px rgba(30,42,53,.07);
     transition: transform .22s ease, box-shadow .22s ease;
     cursor: default;
