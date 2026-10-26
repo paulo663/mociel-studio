@@ -128,6 +128,7 @@
     .svc-foot { display: flex; align-items: center; justify-content: space-between;
       margin-top: .85rem; padding-top: .7rem; border-top: 1px solid var(--polar); }
     .svc-dur { font-size: .73rem; color: var(--muted); }
+    .svc-dur-note { font-size: .68rem; color: var(--sand); font-style: italic; }
     .svc-price { font-size: .83rem; font-weight: 600; color: var(--blue); }
     .svc-price-from { font-size: .7rem; font-weight: 400; color: var(--muted); display: block; text-align: right; }
 
@@ -463,58 +464,58 @@ const CFG = {
 // ═══════════════════════════════════════
 const SERVICES = [
   // ── CORTE ──
-  { id:'corte',         cat:'Corte',      name:'Corte de cabello',          dur:45,  price:25000,                icon:'✂️',  desc:'Corte normal o especial adaptado a tu estilo y tipo de cabello' },
-  { id:'corte-hombre',  cat:'Corte',      name:'Corte de hombre',           dur:30,  price:10000, priceMax:25000, icon:'💈',  desc:'Corte masculino normal o largo' },
-  { id:'corte-nino',    cat:'Corte',      name:'Corte de niño',             dur:20,  price:10000,                icon:'👦',  desc:'Corte de cabello para niños' },
-  { id:'corte-nina',    cat:'Corte',      name:'Corte de niña',             dur:25,  price:15000,                icon:'👧',  desc:'Corte de cabello para niñas' },
-  { id:'corte-bebe',    cat:'Corte',      name:'Corte bebé',                dur:15,  price:10000,                icon:'🍼',  desc:'Corte de cabello para bebés' },
-  { id:'rapado',        cat:'Corte',      name:'Corte rapado total',        dur:20,  price:10000,                icon:'🪒',  desc:'Rapado completo de cabeza' },
-  { id:'patilla-barba', cat:'Corte',      name:'Patilla y barba',           dur:20,  price:5000,                 icon:'🧔',  desc:'Arreglo de patilla y barba' },
+  { id:'corte',         cat:'Corte',      name:'Corte de cabello',          dur:45,  durMax:60,  price:25000,                icon:'✂️',  desc:'Corte normal o especial adaptado a tu estilo y tipo de cabello' },
+  { id:'corte-hombre',  cat:'Corte',      name:'Corte de hombre',           dur:30,  durMax:45,  price:10000, priceMax:25000, icon:'💈',  desc:'Corte masculino normal o largo' },
+  { id:'corte-nino',    cat:'Corte',      name:'Corte de niño',             dur:20,  durMax:30,  price:10000,                icon:'👦',  desc:'Corte de cabello para niños' },
+  { id:'corte-nina',    cat:'Corte',      name:'Corte de niña',             dur:25,  durMax:40,  price:15000,                icon:'👧',  desc:'Corte de cabello para niñas' },
+  { id:'corte-bebe',    cat:'Corte',      name:'Corte bebé',                dur:15,  durMax:20,  price:10000,                icon:'🍼',  desc:'Corte de cabello para bebés' },
+  { id:'rapado',        cat:'Corte',      name:'Corte rapado total',        dur:20,  durMax:30,  price:10000,                icon:'🪒',  desc:'Rapado completo de cabeza' },
+  { id:'patilla-barba', cat:'Corte',      name:'Patilla y barba',           dur:20,  durMax:30,  price:5000,                 icon:'🧔',  desc:'Arreglo de patilla y barba' },
   // ── COLOR ──
-  { id:'tinte-r',       cat:'Color',      name:'Tinte en raíces',           dur:90,  price:37100, priceMax:57200, icon:'🎨',  desc:'Aplicación de color en raíces. Varía según el largo del cabello' },
-  { id:'tinte-t',       cat:'Color',      name:'Tinte total',               dur:120, price:43800, priceMax:72000, icon:'🎨',  desc:'Coloración completa del cabello. Varía según el largo' },
-  { id:'bano-color',    cat:'Color',      name:'Baño de color',             dur:90,  price:31500, priceMax:47700, icon:'🪣',  desc:'Tonalización y brillo. Varía según el largo del cabello' },
-  { id:'highlights',    cat:'Color',      name:'Highlights / Mechas',       dur:180, price:79200, priceMax:121500,icon:'✨',  desc:'Babylights, morena iluminada, highlights con papel o gorra. Varía según largo y cobertura' },
-  { id:'balayage',      cat:'Color',      name:'Balayage',                  dur:210, price:86300, priceMax:159500,icon:'🌅',  desc:'Degradé natural estilo californiano. Varía según largo y abundancia' },
-  { id:'decoloracion',  cat:'Color',      name:'Decoloración total',        dur:120, price:40000, priceMax:120000,icon:'⚪',  desc:'Decoloración completa del cabello. Varía según el largo' },
+  { id:'tinte-r',       cat:'Color',      name:'Tinte en raíces',           dur:90,  durMax:150, price:37100, priceMax:57200, icon:'🎨',  desc:'Aplicación de color en raíces. Varía según el largo del cabello' },
+  { id:'tinte-t',       cat:'Color',      name:'Tinte total',               dur:120, durMax:180, price:43800, priceMax:72000, icon:'🎨',  desc:'Coloración completa del cabello. Varía según el largo' },
+  { id:'bano-color',    cat:'Color',      name:'Baño de color',             dur:90,  durMax:120, price:31500, priceMax:47700, icon:'🪣',  desc:'Tonalización y brillo. Varía según el largo del cabello' },
+  { id:'highlights',    cat:'Color',      name:'Highlights / Mechas',       dur:180, durMax:270, price:79200, priceMax:121500,icon:'✨',  desc:'Babylights, morena iluminada, highlights con papel o gorra. Varía según largo y cobertura' },
+  { id:'balayage',      cat:'Color',      name:'Balayage',                  dur:210, durMax:300, price:86300, priceMax:159500,icon:'🌅',  desc:'Degradé natural estilo californiano. Varía según largo y abundancia' },
+  { id:'decoloracion',  cat:'Color',      name:'Decoloración total',        dur:120, durMax:240, price:40000, priceMax:120000,icon:'⚪',  desc:'Decoloración completa del cabello. Varía según el largo' },
   // ── TRATAMIENTO ──
-  { id:'tratamiento',   cat:'Tratamiento',name:'Tratamiento capilar',       dur:60,  price:21800, priceMax:27800, icon:'🌿',  desc:'Morroccanoil, nutrición y recuperación del cabello. Varía según el largo' },
-  { id:'botox',         cat:'Tratamiento',name:'Botox capilar',             dur:90,  price:25000, priceMax:35000, icon:'💆',  desc:'Hidratación y alisado suave. Varía según el largo del cabello' },
-  { id:'botox-hid',     cat:'Tratamiento',name:'Botox hidratante',          dur:90,  price:15000, priceMax:39000, icon:'💧',  desc:'Hidratación profunda sin efecto alisante. Varía según el largo' },
-  { id:'nanoplastia',   cat:'Tratamiento',name:'Nanoplastia Plex',          dur:210, price:40000, priceMax:80000, icon:'🧬',  desc:'Tratamiento alisado premium de larga duración. Varía según el largo' },
-  { id:'nanoplastia-r', cat:'Tratamiento',name:'Nanoplastia Regular',       dur:210, price:77800, priceMax:130100,icon:'🔬',  desc:'Alisado con resultado natural duradero. Varía según largo y abundancia' },
-  { id:'keratina',      cat:'Tratamiento',name:'Keratina',                  dur:210, price:64700, priceMax:134300,icon:'💎',  desc:'Tratamiento alisante premium de larga duración. Varía según largo y abundancia' },
-  { id:'detox',         cat:'Tratamiento',name:'Detox capilar',             dur:60,  price:30000,                icon:'🫧',  desc:'Limpieza y purificación profunda del cabello y cuero cabelludo' },
+  { id:'tratamiento',   cat:'Tratamiento',name:'Tratamiento capilar',       dur:60,  durMax:90,  price:21800, priceMax:27800, icon:'🌿',  desc:'Morroccanoil, nutrición y recuperación del cabello. Varía según el largo' },
+  { id:'botox',         cat:'Tratamiento',name:'Botox capilar',             dur:90,  durMax:150, price:25000, priceMax:35000, icon:'💆',  desc:'Hidratación y alisado suave. Varía según el largo del cabello' },
+  { id:'botox-hid',     cat:'Tratamiento',name:'Botox hidratante',          dur:90,  durMax:150, price:15000, priceMax:39000, icon:'💧',  desc:'Hidratación profunda sin efecto alisante. Varía según el largo' },
+  { id:'nanoplastia',   cat:'Tratamiento',name:'Nanoplastia Plex',          dur:210, durMax:300, price:40000, priceMax:80000, icon:'🧬',  desc:'Tratamiento alisado premium de larga duración. Varía según el largo' },
+  { id:'nanoplastia-r', cat:'Tratamiento',name:'Nanoplastia Regular',       dur:210, durMax:300, price:77800, priceMax:130100,icon:'🔬',  desc:'Alisado con resultado natural duradero. Varía según largo y abundancia' },
+  { id:'keratina',      cat:'Tratamiento',name:'Keratina',                  dur:210, durMax:300, price:64700, priceMax:134300,icon:'💎',  desc:'Tratamiento alisante premium de larga duración. Varía según largo y abundancia' },
+  { id:'detox',         cat:'Tratamiento',name:'Detox capilar',             dur:60,  durMax:75,  price:30000,                icon:'🫧',  desc:'Limpieza y purificación profunda del cabello y cuero cabelludo' },
   // ── UÑAS ──
-  { id:'mani-semi',     cat:'Uñas',       name:'Manicure SPA + semiperm.',  dur:60,  price:18000,                icon:'💅',  desc:'Manicure spa completo con esmalte semipermanente incluido' },
-  { id:'mani-trad',     cat:'Uñas',       name:'Manicure SPA + tradicional',dur:60,  price:13000,                icon:'💅',  desc:'Manicure spa completo con esmalte tradicional incluido' },
-  { id:'mani-spa',      cat:'Uñas',       name:'Manicure SPA (sin esmalte)',dur:45,  price:9000,                 icon:'🧖',  desc:'Manicure spa completo sin esmaltado final' },
-  { id:'pedi-semi',     cat:'Uñas',       name:'Pedicure SPA + semiperm.',  dur:75,  price:20000,                icon:'🦶',  desc:'Pedicure spa completo con esmalte semipermanente incluido' },
-  { id:'pedi-trad',     cat:'Uñas',       name:'Pedicure SPA + tradicional',dur:60,  price:15000,                icon:'🦶',  desc:'Pedicure spa completo con esmalte tradicional incluido' },
-  { id:'pedi-spa',      cat:'Uñas',       name:'Pedicure SPA (sin esmalte)',dur:45,  price:11000,                icon:'🛁',  desc:'Pedicure spa completo sin esmaltado final' },
-  { id:'semi-manos',    cat:'Uñas',       name:'Semipermanente manos',      dur:45,  price:13000,                icon:'💅',  desc:'Solo aplicación de esmalte semipermanente en manos' },
-  { id:'semi-pies',     cat:'Uñas',       name:'Semipermanente pies',       dur:45,  price:13000,                icon:'🦶',  desc:'Solo aplicación de esmalte semipermanente en pies' },
-  { id:'semi-mp',       cat:'Uñas',       name:'Semi manos + pies',         dur:90,  price:25000,                icon:'✨',  desc:'Semipermanente completo en manos y pies' },
-  { id:'gel-x',         cat:'Uñas',       name:'Gel X',                     dur:75,  price:18000,                icon:'💎',  desc:'Uñas en gel con esmaltado liso y acabado profesional' },
-  { id:'rubber',        cat:'Uñas',       name:'Rubber',                    dur:60,  price:15000,                icon:'🪩',  desc:'Base rubber para mayor duración y resistencia del esmalte' },
-  { id:'calcio',        cat:'Uñas',       name:'Calcio',                    dur:60,  price:15000,                icon:'🔮',  desc:'Fortalecimiento de uñas con calcio profesional' },
-  { id:'retiro-semi',   cat:'Uñas',       name:'Retiro semiperm. y Gel X',  dur:20,  price:3000,                 icon:'🧹',  desc:'Retiro de esmalte semipermanente o gel X' },
-  { id:'retiro-acrilico',cat:'Uñas',      name:'Retiro acrílico',           dur:20,  price:4000,                 icon:'🧽',  desc:'Retiro de uñas acrílicas' },
-  { id:'efecto-deco',   cat:'Uñas',       name:'Efecto y decoración',       dur:15,  price:2000,                 icon:'🎨',  desc:'Efectos especiales y decoración de uñas (por uña)' },
-  { id:'reposicion',    cat:'Uñas',       name:'Reposición de uña',         dur:15,  price:2000,                 icon:'🔧',  desc:'Reposición de una uña' },
-  { id:'ampolla',       cat:'Uñas',       name:'Ampolla manicure/pedicure', dur:10,  price:1000,                 icon:'💊',  desc:'Ampolla de tratamiento para manicure o pedicure' },
+  { id:'mani-semi',     cat:'Uñas',       name:'Manicure SPA + semiperm.',  dur:60,  durMax:75,  price:18000,                icon:'💅',  desc:'Manicure spa completo con esmalte semipermanente incluido' },
+  { id:'mani-trad',     cat:'Uñas',       name:'Manicure SPA + tradicional',dur:60,  durMax:75,  price:13000,                icon:'💅',  desc:'Manicure spa completo con esmalte tradicional incluido' },
+  { id:'mani-spa',      cat:'Uñas',       name:'Manicure SPA (sin esmalte)',dur:45,  durMax:60,  price:9000,                 icon:'🧖',  desc:'Manicure spa completo sin esmaltado final' },
+  { id:'pedi-semi',     cat:'Uñas',       name:'Pedicure SPA + semiperm.',  dur:75,  durMax:90,  price:20000,                icon:'🦶',  desc:'Pedicure spa completo con esmalte semipermanente incluido' },
+  { id:'pedi-trad',     cat:'Uñas',       name:'Pedicure SPA + tradicional',dur:60,  durMax:75,  price:15000,                icon:'🦶',  desc:'Pedicure spa completo con esmalte tradicional incluido' },
+  { id:'pedi-spa',      cat:'Uñas',       name:'Pedicure SPA (sin esmalte)',dur:45,  durMax:60,  price:11000,                icon:'🛁',  desc:'Pedicure spa completo sin esmaltado final' },
+  { id:'semi-manos',    cat:'Uñas',       name:'Semipermanente manos',      dur:45,  durMax:60,  price:13000,                icon:'💅',  desc:'Solo aplicación de esmalte semipermanente en manos' },
+  { id:'semi-pies',     cat:'Uñas',       name:'Semipermanente pies',       dur:45,  durMax:60,  price:13000,                icon:'🦶',  desc:'Solo aplicación de esmalte semipermanente en pies' },
+  { id:'semi-mp',       cat:'Uñas',       name:'Semi manos + pies',         dur:90,  durMax:120, price:25000,                icon:'✨',  desc:'Semipermanente completo en manos y pies' },
+  { id:'gel-x',         cat:'Uñas',       name:'Gel X',                     dur:75,  durMax:90,  price:18000,                icon:'💎',  desc:'Uñas en gel con esmaltado liso y acabado profesional' },
+  { id:'rubber',        cat:'Uñas',       name:'Rubber',                    dur:60,  durMax:75,  price:15000,                icon:'🪩',  desc:'Base rubber para mayor duración y resistencia del esmalte' },
+  { id:'calcio',        cat:'Uñas',       name:'Calcio',                    dur:60,  durMax:75,  price:15000,                icon:'🔮',  desc:'Fortalecimiento de uñas con calcio profesional' },
+  { id:'retiro-semi',   cat:'Uñas',       name:'Retiro semiperm. y Gel X',  dur:20,  durMax:30,  price:3000,                 icon:'🧹',  desc:'Retiro de esmalte semipermanente o gel X' },
+  { id:'retiro-acrilico',cat:'Uñas',      name:'Retiro acrílico',           dur:20,  durMax:30,  price:4000,                 icon:'🧽',  desc:'Retiro de uñas acrílicas' },
+  { id:'efecto-deco',   cat:'Uñas',       name:'Efecto y decoración',       dur:15,  durMax:30,  price:2000,                 icon:'🎨',  desc:'Efectos especiales y decoración de uñas (por uña)' },
+  { id:'reposicion',    cat:'Uñas',       name:'Reposición de uña',         dur:15,  durMax:20,  price:2000,                 icon:'🔧',  desc:'Reposición de una uña' },
+  { id:'ampolla',       cat:'Uñas',       name:'Ampolla manicure/pedicure', dur:10,  durMax:15,  price:1000,                 icon:'💊',  desc:'Ampolla de tratamiento para manicure o pedicure' },
   // ── PEINADO ──
-  { id:'blower',        cat:'Peinado',    name:'Blower',                    dur:45,  price:12000,                icon:'💨',  desc:'Lavado y secado con difusor o brush' },
-  { id:'lavado-plancha', cat:'Peinado',   name:'Lavado, secado y plancha',  dur:60,  price:15000,                icon:'💨',  desc:'Lavado + masaje capilar + secado y alisado' },
-  { id:'ondas',         cat:'Peinado',    name:'Ondas',                     dur:60,  price:15000, priceMax:35000, icon:'🌊',  desc:'Ondas naturales en cabello corto, mediano, largo o extra largo' },
-  { id:'recogido-b',    cat:'Peinado',    name:'Recogido básico',           dur:60,  price:35000,                icon:'🪢',  desc:'Recogido clásico y elegante para cualquier ocasión' },
-  { id:'recogido-e',    cat:'Peinado',    name:'Recogido especial',         dur:75,  price:40000,                icon:'👑',  desc:'Recogido elaborado con detalles y acabados especiales' },
-  { id:'peinado-social', cat:'Peinado',   name:'Peinado social',            dur:60,  price:25000,                icon:'🎉',  desc:'Peinado para eventos sociales, fiestas y celebraciones' },
-  { id:'peinado-novia', cat:'Peinado',    name:'Peinado de novia',          dur:120, price:75000,                icon:'💒',  desc:'Peinado nupcial completo para tu día especial' },
+  { id:'blower',        cat:'Peinado',    name:'Blower',                    dur:45,  durMax:75,  price:12000,                icon:'💨',  desc:'Lavado y secado con difusor o brush' },
+  { id:'lavado-plancha', cat:'Peinado',   name:'Lavado, secado y plancha',  dur:60,  durMax:90,  price:15000,                icon:'💨',  desc:'Lavado + masaje capilar + secado y alisado' },
+  { id:'ondas',         cat:'Peinado',    name:'Ondas',                     dur:60,  durMax:90,  price:15000, priceMax:35000, icon:'🌊',  desc:'Ondas naturales en cabello corto, mediano, largo o extra largo' },
+  { id:'recogido-b',    cat:'Peinado',    name:'Recogido básico',           dur:60,  durMax:90,  price:35000,                icon:'🪢',  desc:'Recogido clásico y elegante para cualquier ocasión' },
+  { id:'recogido-e',    cat:'Peinado',    name:'Recogido especial',         dur:75,  durMax:120, price:40000,                icon:'👑',  desc:'Recogido elaborado con detalles y acabados especiales' },
+  { id:'peinado-social', cat:'Peinado',   name:'Peinado social',            dur:60,  durMax:90,  price:25000,                icon:'🎉',  desc:'Peinado para eventos sociales, fiestas y celebraciones' },
+  { id:'peinado-novia', cat:'Peinado',    name:'Peinado de novia',          dur:120, durMax:180, price:75000,                icon:'💒',  desc:'Peinado nupcial completo para tu día especial' },
   // ── MAQUILLAJE ──
-  { id:'maq-social',    cat:'Maquillaje', name:'Maquillaje social',         dur:60,  price:25000,                icon:'💄',  desc:'Maquillaje para eventos sociales, salidas y celebraciones' },
-  { id:'maq-grad',      cat:'Maquillaje', name:'Maquillaje graduación',     dur:75,  price:35000,                icon:'🎓',  desc:'Maquillaje especial para ceremonias de graduación' },
-  { id:'maq-novia',     cat:'Maquillaje', name:'Maquillaje de novia',       dur:120, price:75000,                icon:'👰',  desc:'Maquillaje nupcial completo para tu día más especial' },
+  { id:'maq-social',    cat:'Maquillaje', name:'Maquillaje social',         dur:60,  durMax:90,  price:25000,                icon:'💄',  desc:'Maquillaje para eventos sociales, salidas y celebraciones' },
+  { id:'maq-grad',      cat:'Maquillaje', name:'Maquillaje graduación',     dur:75,  durMax:90,  price:35000,                icon:'🎓',  desc:'Maquillaje especial para ceremonias de graduación' },
+  { id:'maq-novia',     cat:'Maquillaje', name:'Maquillaje de novia',       dur:120, durMax:150, price:75000,                icon:'👰',  desc:'Maquillaje nupcial completo para tu día más especial' },
 ];
 
 const EMPLOYEES = [
@@ -589,7 +590,7 @@ function renderSvcs() {
         <div class="svc-name">${s.name}</div>
         <div class="svc-desc">${s.desc}</div>
         <div class="svc-foot">
-          <span class="svc-dur">⏱ ${fmtDur(s.dur)}</span>
+          <span class="svc-dur">⏱ ${fmtDur(s.dur, s.durMax)}${s.durMax ? ' <span class="svc-dur-note">· puede variar según largo y estilo</span>' : ''}</span>
           ${fmtPrice(s)}
         </div>
       </div>`
@@ -698,7 +699,7 @@ function buildSlots() {
   const dateStr = `${dow} ${S.date.getDate()} de ${MONTHS_ES_SHORT[S.date.getMonth()]}`;
   document.getElementById('step4Sub').textContent = `Disponibilidad para el ${dateStr}`;
   document.getElementById('slotSvcName').textContent = S.service.name;
-  document.getElementById('slotDur').textContent = fmtDur(S.service.dur);
+  document.getElementById('slotDur').textContent = fmtDur(S.service.dur, S.service.durMax);
 
   const bookings = getStoredBookings();
   const dstr = S.date.toDateString();
@@ -972,9 +973,9 @@ function storeBooking(b) {
 // ═══════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════
-function fmtDur(m) {
-  const h = Math.floor(m/60), mn = m%60;
-  return h ? (mn ? `${h}h ${mn}min` : `${h}h`) : `${m} min`;
+function fmtDur(m, mMax) {
+  const fmt = n => { const h = Math.floor(n/60), mn = n%60; return h ? (mn ? `${h}h ${mn}min` : `${h}h`) : `${n} min`; };
+  return mMax ? `${fmt(m)} – ${fmt(mMax)}` : fmt(m);
 }
 function t2m(ts) { const [h,m] = ts.split(':').map(Number); return h*60+m; }
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
