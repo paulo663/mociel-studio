@@ -279,6 +279,83 @@
 
     .hidden { display: none !important; }
     .mobile-header { display: none; }
+
+    /* ── LOGIN GATE ── */
+    #loginGate {
+      position: fixed; inset: 0; background: var(--dark);
+      display: flex; align-items: center; justify-content: center; z-index: 999;
+    }
+    #loginGate.gone { display: none; }
+    .login-box {
+      background: #fff; border-radius: 24px; padding: 2.5rem 2rem;
+      width: min(340px, 92vw); text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,.35);
+    }
+    .login-logo { height: 72px; width: auto; margin: 0 auto 1.4rem; display: block; }
+    .login-title { font-family: 'Cormorant Garamond', serif; font-size: 1.55rem;
+      font-weight: 300; color: var(--dark); margin-bottom: .3rem; }
+    .login-sub { font-size: .78rem; color: var(--muted); margin-bottom: 1.6rem; }
+    .login-input { width: 100%; padding: .9rem 1rem; border: 1.5px solid var(--polar);
+      border-radius: 12px; font-family: 'Jost', sans-serif; font-size: 1.1rem;
+      color: var(--text); outline: none; text-align: center; letter-spacing: .3em;
+      transition: border-color .18s; }
+    .login-input:focus { border-color: var(--cambridge); }
+    .login-btn { width: 100%; padding: .9rem; margin-top: .75rem; background: var(--dark);
+      border: none; border-radius: 12px; font-family: 'Jost', sans-serif; font-size: .92rem;
+      font-weight: 500; color: #fff; cursor: pointer; transition: background .18s; }
+    .login-btn:hover { background: var(--blue); }
+    .login-error { font-size: .78rem; color: var(--red); margin-top: .65rem; min-height: 1.1em; }
+
+    /* ── GALLERY MANAGER ── */
+    .gm-upload { background: #fff; border-radius: 16px; padding: 1.5rem;
+      box-shadow: 0 1px 12px rgba(30,42,53,.07); margin-bottom: 1.25rem; }
+    .gm-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem;
+      font-weight: 400; color: var(--dark); margin-bottom: 1rem; }
+    .gm-form { display: grid; gap: .75rem; }
+    .gm-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .gm-field label { display: block; font-size: .7rem; font-weight: 600;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: .35rem; }
+    .gm-field input, .gm-field select {
+      width: 100%; padding: .65rem .9rem; border: 1.5px solid var(--polar);
+      border-radius: 10px; font-family: 'Jost', sans-serif; font-size: .88rem;
+      color: var(--text); outline: none; background: #fff; transition: border-color .18s; }
+    .gm-field input:focus, .gm-field select:focus { border-color: var(--cambridge); }
+    .gm-dropzone { border: 2px dashed var(--polar); border-radius: 14px;
+      padding: 2rem 1rem; text-align: center; cursor: pointer; transition: all .2s;
+      background: var(--off); position: relative; }
+    .gm-dropzone:hover, .gm-dropzone.over { border-color: var(--cambridge); background: #EEF4FB; }
+    .gm-dropzone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .gm-drop-icon { font-size: 2rem; margin-bottom: .5rem; opacity: .4; }
+    .gm-drop-text { font-size: .82rem; color: var(--muted); }
+    .gm-drop-text strong { color: var(--cambridge); }
+    .gm-preview-strip { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+    .gm-preview-thumb { width: 64px; height: 64px; border-radius: 10px;
+      object-fit: cover; border: 2px solid var(--polar); }
+    .gm-submit { padding: .8rem 1.6rem; background: var(--dark); border: none;
+      border-radius: 100px; font-family: 'Jost', sans-serif; font-size: .88rem;
+      font-weight: 500; color: #fff; cursor: pointer; transition: background .18s; }
+    .gm-submit:hover { background: var(--blue); }
+    .gm-submit:disabled { opacity: .5; cursor: not-allowed; }
+    .gm-msg { font-size: .8rem; color: var(--green); margin-top: .5rem; min-height: 1.1em; }
+    .gm-msg.err { color: var(--red); }
+
+    .gm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+      gap: .75rem; }
+    .gm-card { background: #fff; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 1px 10px rgba(30,42,53,.07); position: relative; }
+    .gm-card img { width: 100%; height: 130px; object-fit: cover; display: block; }
+    .gm-card-body { padding: .55rem .65rem .6rem; }
+    .gm-card-cat { font-size: .65rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--cambridge); }
+    .gm-card-lbl { font-size: .78rem; color: var(--text); margin-top: .1rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .gm-del { position: absolute; top: .4rem; right: .4rem; width: 26px; height: 26px;
+      background: rgba(30,42,53,.65); border: none; border-radius: 50%; color: #fff;
+      font-size: .75rem; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; transition: background .18s; backdrop-filter: blur(4px); }
+    .gm-del:hover { background: var(--red); }
+    .gm-empty { text-align: center; padding: 2.5rem; color: var(--muted); font-size: .88rem; }
+    @media(max-width:600px){ .gm-row { grid-template-columns: 1fr; } }
     @media(max-width:768px){
       .mobile-header { display: flex; align-items: center; justify-content: space-between;
         padding: 1rem 1.25rem; background: var(--dark); }
@@ -296,7 +373,18 @@
 </head>
 <body>
 
-<!-- LOGIN (removed) -->
+<!-- LOGIN GATE -->
+<div id="loginGate">
+  <div class="login-box">
+    <img src="logo.png" alt="Mon Ciel" class="login-logo">
+    <div class="login-title">Panel de administración</div>
+    <div class="login-sub">Ingresa tu contraseña para continuar</div>
+    <input type="password" class="login-input" id="loginInput" placeholder="••••••"
+      onkeydown="if(event.key==='Enter')checkLogin()" autocomplete="current-password">
+    <button class="login-btn" onclick="checkLogin()">Entrar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
 
 <!-- APP -->
 <div class="app" id="app">
@@ -323,6 +411,7 @@
       <div id="managerNav" class="hidden">
         <div class="sb-link active" onclick="showView('calendar')"><span>📅</span> Calendario</div>
         <div class="sb-link" onclick="showView('all')"><span>👥</span> Todas las citas</div>
+        <div class="sb-link" onclick="showView('gallery')"><span>📸</span> Galería</div>
         <div class="sb-link" onclick="showView('export')"><span>📊</span> Exportar datos</div>
       </div>
     </nav>
@@ -401,9 +490,35 @@ let CAL_MONTH = new Date().getMonth();
 // ═══════════════════════════════════
 // INIT
 // ═══════════════════════════════════
+// ═══════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════
+const _PH = '9b04f5410f803df1f5f93aa3778059efe90db326c19f5d7ba85414c96739b3bd';
+
+async function checkLogin() {
+  const val = document.getElementById('loginInput').value;
+  if (!val) return;
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(val));
+  const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if (hash === _PH) {
+    sessionStorage.setItem('mc_auth','1');
+    document.getElementById('loginGate').classList.add('gone');
+    enter();
+  } else {
+    document.getElementById('loginError').textContent = 'Contraseña incorrecta';
+    document.getElementById('loginInput').value = '';
+    document.getElementById('loginInput').focus();
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   updatePageDate();
-  enter();
+  if (sessionStorage.getItem('mc_auth') === '1') {
+    document.getElementById('loginGate').classList.add('gone');
+    enter();
+  } else {
+    setTimeout(() => document.getElementById('loginInput')?.focus(), 100);
+  }
 });
 
 function enter() {
@@ -423,6 +538,7 @@ function enter() {
 }
 
 function logout() {
+  sessionStorage.removeItem('mc_auth');
   window.location.reload();
 }
 
@@ -459,6 +575,13 @@ function loadView() {
     document.getElementById('statsRow').innerHTML = '';
     renderExport(all);
     document.getElementById('pageTitle').textContent = 'Exportar datos';
+  }
+  if (v === 'gallery') {
+    document.getElementById('dateBar').style.display = 'none';
+    document.getElementById('empTabs').classList.add('hidden');
+    document.getElementById('statsRow').innerHTML = '';
+    document.getElementById('pageTitle').textContent = 'Galería de fotos';
+    renderGallery();
   }
   updatePageDate();
 }
@@ -1081,6 +1204,153 @@ function calNext() {
   if (CAL_MONTH > 11) { CAL_MONTH = 0; CAL_YEAR++; }
   CAL_SEL_DAY = null;
   renderMonthCalendar(getBookings());
+}
+
+// ═══════════════════════════════════
+// GALLERY MANAGER
+// ═══════════════════════════════════
+async function renderGallery() {
+  const container = document.getElementById('agendaView');
+  container.innerHTML = `
+    <div class="gm-upload">
+      <div class="gm-title">Subir fotos</div>
+      <div class="gm-form">
+        <div class="gm-dropzone" id="gmDrop">
+          <input type="file" id="gmFile" accept="image/*" multiple onchange="gmPreview(this)">
+          <div class="gm-drop-icon">🖼️</div>
+          <div class="gm-drop-text">Arrastra las fotos aquí o <strong>haz clic para elegir</strong></div>
+        </div>
+        <div class="gm-preview-strip" id="gmPreviews"></div>
+        <div class="gm-row">
+          <div class="gm-field">
+            <label>Categoría</label>
+            <select id="gmCat">
+              <option value="cabello">Cabello</option>
+              <option value="color">Color</option>
+              <option value="unas">Uñas</option>
+            </select>
+          </div>
+          <div class="gm-field">
+            <label>Descripción (opcional)</label>
+            <input type="text" id="gmLabel" placeholder="Ej: Corte y color">
+          </div>
+        </div>
+        <div>
+          <button class="gm-submit" id="gmSubmit" onclick="gmUpload()">Subir fotos</button>
+          <div class="gm-msg" id="gmMsg"></div>
+        </div>
+      </div>
+    </div>
+    <div class="gm-upload">
+      <div class="gm-title">Fotos actuales</div>
+      <div id="gmGrid"><div class="gm-empty">Cargando...</div></div>
+    </div>`;
+
+  const drop = document.getElementById('gmDrop');
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault(); drop.classList.remove('over');
+    document.getElementById('gmFile').files = e.dataTransfer.files;
+    gmPreview(document.getElementById('gmFile'));
+  });
+
+  gmLoadGrid();
+}
+
+function gmPreview(input) {
+  const strip = document.getElementById('gmPreviews');
+  strip.innerHTML = '';
+  Array.from(input.files).forEach(f => {
+    const img = document.createElement('img');
+    img.className = 'gm-preview-thumb';
+    img.src = URL.createObjectURL(f);
+    strip.appendChild(img);
+  });
+}
+
+async function gmUpload() {
+  const files = document.getElementById('gmFile').files;
+  if (!files.length) { gmSetMsg('Selecciona al menos una foto', true); return; }
+
+  const btn = document.getElementById('gmSubmit');
+  btn.disabled = true;
+  let ok = 0, fail = 0;
+
+  for (const file of files) {
+    const fd = new FormData();
+    fd.append('action', 'upload');
+    fd.append('photo', file);
+    fd.append('category', document.getElementById('gmCat').value);
+    fd.append('label', document.getElementById('gmLabel').value);
+    fd.append('size', 'normal');
+    try {
+      const r = await fetch('gallery-upload.php', { method: 'POST', body: fd });
+      const d = await r.json();
+      if (d.success) ok++; else fail++;
+    } catch { fail++; }
+  }
+
+  btn.disabled = false;
+  document.getElementById('gmFile').value = '';
+  document.getElementById('gmPreviews').innerHTML = '';
+  document.getElementById('gmLabel').value = '';
+
+  if (fail === 0) gmSetMsg(`✓ ${ok} foto${ok>1?'s':''} subida${ok>1?'s':''} correctamente`);
+  else gmSetMsg(`${ok} subidas, ${fail} con error`, true);
+
+  gmLoadGrid();
+}
+
+async function gmLoadGrid() {
+  const grid = document.getElementById('gmGrid');
+  if (!grid) return;
+  try {
+    const r = await fetch('gallery-upload.php?action=list');
+    const d = await r.json();
+    if (!d.images || !d.images.length) {
+      grid.innerHTML = '<div class="gm-empty">No hay fotos todavía</div>';
+      return;
+    }
+    grid.innerHTML = '<div class="gm-grid">' +
+      d.images.map(img => `
+        <div class="gm-card" id="gmc-${img.filename}">
+          <img src="${img.url}" alt="${img.label||''}">
+          <button class="gm-del" onclick="gmDelete('${img.filename}')" title="Eliminar">✕</button>
+          <div class="gm-card-body">
+            <div class="gm-card-cat">${img.category}</div>
+            <div class="gm-card-lbl">${img.label || '—'}</div>
+          </div>
+        </div>`).join('') +
+      '</div>';
+  } catch {
+    grid.innerHTML = '<div class="gm-empty">No se pudo cargar las fotos</div>';
+  }
+}
+
+async function gmDelete(filename) {
+  if (!confirm('¿Eliminar esta foto?')) return;
+  const fd = new FormData();
+  fd.append('action', 'delete');
+  fd.append('filename', filename);
+  try {
+    const r = await fetch('gallery-upload.php', { method: 'POST', body: fd });
+    const d = await r.json();
+    if (d.success) {
+      const card = document.getElementById('gmc-' + filename);
+      if (card) card.remove();
+    } else {
+      alert('Error al eliminar');
+    }
+  } catch { alert('Error de conexión'); }
+}
+
+function gmSetMsg(txt, isErr = false) {
+  const el = document.getElementById('gmMsg');
+  if (!el) return;
+  el.textContent = txt;
+  el.className = 'gm-msg' + (isErr ? ' err' : '');
+  setTimeout(() => { if(el) el.textContent = ''; }, 4000);
 }
 </script>
 </body>
