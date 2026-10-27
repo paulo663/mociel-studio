@@ -851,26 +851,40 @@ function buildSlots() {
     ? fmtDur(S.bookingDur) : fmtDur(S.service.dur, S.service.durMax);
 
   const bookings = getStoredBookings();
-  const dstr = S.date.toDateString();
-  const empId = S.employee?.id !== 'any' ? S.employee?.id : null;
+  const dstr     = S.date.toDateString();
+  const dayNum   = S.date.getDay();
+  const empId    = S.employee?.id !== 'any' ? S.employee?.id : null;
 
-  const dayBookings = bookings.filter(b =>
-    b.date === dstr && (!empId || b.empId === empId)
+  // Especialistas disponibles para este servicio en este día (excluye "sin preferencia")
+  const availableEmps = EMPLOYEES.filter(e =>
+    !e.any && e.days.includes(dayNum) &&
+    (!e.cats || e.cats.includes(S.service.cat))
   );
 
   const start = CFG.HOUR_START * 60;
   const end   = CFG.HOUR_END   * 60;
   const dur   = S.bookingDur || S.service.dur;
 
+  function isEmpTaken(eid, t) {
+    return bookings.filter(b => b.date === dstr && b.empId === eid).some(b => {
+      const bs = t2m(b.time), be = bs + b.duration;
+      return t < be && t + dur > bs;
+    });
+  }
+
   let html = '';
   for (let t = start; t <= end - dur; t += CFG.INTERVAL) {
     const h = Math.floor(t/60).toString().padStart(2,'0');
     const min = (t%60).toString().padStart(2,'0');
     const ts = `${h}:${min}`;
-    const taken = dayBookings.some(b => {
-      const bs = t2m(b.time), be = bs + b.duration;
-      return t < be && t + dur > bs;
-    });
+    let taken;
+    if (empId) {
+      // Especialista específica: bloqueado si ella tiene cita
+      taken = isEmpTaken(empId, t);
+    } else {
+      // Sin preferencia: bloqueado solo si TODAS las especialistas disponibles están ocupadas
+      taken = availableEmps.length > 0 && availableEmps.every(e => isEmpTaken(e.id, t));
+    }
     const isSel = S.time === ts;
     html += `<div class="slot ${taken?'taken':''} ${isSel?'sel':''}"
       ${!taken ? `onclick="pickSlot('${ts}',this)"` : ''}>${fmt12(ts)}</div>`;
