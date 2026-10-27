@@ -726,6 +726,7 @@ function pickHair(type, val, el) {
   }
   el.classList.add('sel');
   S.bookingDur = calcBookingDur();
+  updateConsultaBtn();
   syncNav();
 }
 
@@ -753,11 +754,23 @@ function buildEmps() {
   ).join('');
 }
 
+const HAIR_LEN_LABELS   = ['corto', 'medio (mitad de espalda)', 'largo', 'muy largo'];
+const HAIR_ABUND_LABELS = ['poco abundante', 'abundante', 'muy abundante'];
+
+function hairDesc() {
+  if (S.hairLen === null || S.hairAbund === null) return null;
+  return `cabello ${HAIR_LEN_LABELS[S.hairLen]} y ${HAIR_ABUND_LABELS[S.hairAbund]}`;
+}
+
 function updateConsultaBtn() {
   const btn = document.getElementById('btnConsulta');
   if (!btn || !S.service) return;
-  const svc = S.service.name;
-  const msg = encodeURIComponent(`Hola Mon Ciel Studio 👋 Tengo una consulta sobre el servicio de *${svc}* antes de reservar mi cita. ¿Me pueden ayudar?`);
+  const svc  = S.service.name;
+  const hair = hairDesc();
+  const extra = hair ? `\nTengo el ${hair}.` : '';
+  const msg = encodeURIComponent(
+    `Hola Mon Ciel Studio 👋 Quiero reservar *${svc}* y tengo una consulta antes de confirmar.${extra}\n¿Me pueden ayudar?`
+  );
   btn.href = `https://wa.me/${CFG.WHATSAPP}?text=${msg}`;
 }
 
@@ -765,7 +778,9 @@ function updateConsultaHairBtn() {
   const btn = document.getElementById('btnConsultaHair');
   if (!btn || !S.service) return;
   const svc = S.service.name;
-  const msg = encodeURIComponent(`Hola Mon Ciel Studio 👋 Estoy reservando el servicio de *${svc}* y no sé bien qué largo de cabello tengo. ¿Me pueden orientar?`);
+  const msg = encodeURIComponent(
+    `Hola Mon Ciel Studio 👋 Estoy por reservar *${svc}* y tengo dudas sobre cuál largo de cabello elegir para la reserva.\n¿Me pueden orientar?`
+  );
   btn.href = `https://wa.me/${CFG.WHATSAPP}?text=${msg}`;
 }
 
