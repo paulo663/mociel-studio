@@ -84,7 +84,7 @@
     }
 
     /* ── STEPS ── */
-    .step { display: none; padding: 1.75rem 1.5rem; max-width: 700px; margin: 0 auto;
+    .step { display: none; padding: 1.75rem 1.5rem 5.5rem; max-width: 700px; margin: 0 auto;
       animation: slideIn .3s ease; }
     .step.active { display: block; }
     .step.back { animation: slideBack .3s ease; }
@@ -298,11 +298,17 @@
     .btn-next.gold:hover { background: var(--gold2); }
     .btn-next:disabled { opacity: .35; pointer-events: none; }
 
+    /* ── FORM VALIDATION ── */
+    .fg input.dirty:invalid { border-color: #e05252; }
+    .form-hint { font-size: .78rem; color: var(--muted); text-align: center; margin-top: .35rem; }
+
     /* ── RESPONSIVE ── */
     @media(max-width:480px) {
       .svc-grid { grid-template-columns: 1fr 1fr; }
       .emp-grid { grid-template-columns: repeat(2,1fr); }
       .slots-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
+      .hair-opts { flex-wrap: wrap; }
+      .hair-opt { flex: 1 1 calc(50% - .25rem); }
     }
 
     .hidden { display: none !important; }
@@ -478,11 +484,11 @@
       <div class="form-row-2">
         <div class="fg">
           <label for="fName">Nombre completo *</label>
-          <input type="text" id="fName" placeholder="Tu nombre" autocomplete="name">
+          <input type="text" id="fName" placeholder="Tu nombre" autocomplete="name" required minlength="2">
         </div>
         <div class="fg">
           <label for="fPhone">WhatsApp *</label>
-          <input type="tel" id="fPhone" placeholder="8888-8888" autocomplete="tel">
+          <input type="tel" id="fPhone" placeholder="8888-8888" autocomplete="tel" required minlength="6">
         </div>
       </div>
       <div class="fg">
@@ -523,7 +529,10 @@
 <div class="bk-nav" id="bkNav">
   <button class="btn-back" id="btnBack" onclick="goBack()" hidden>← Atrás</button>
   <span class="step-ctr" id="stepCtr">Paso 1 de 5</span>
-  <button class="btn-next dark" id="btnNext" onclick="goNext()" disabled>Continuar →</button>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.2rem">
+    <button class="btn-next dark" id="btnNext" onclick="goNext()" disabled>Continuar →</button>
+    <p class="form-hint" id="formHint" hidden>Ingresa nombre y WhatsApp para confirmar.</p>
+  </div>
 </div>
 
 <script>
@@ -548,9 +557,9 @@ const SERVICES = [
   { id:'corte-hombre',  cat:'Corte',      name:'Corte de hombre',           dur:30,  durMax:45,  price:10000, priceMax:25000, icon:'💈',  desc:'Corte masculino normal o largo' },
   { id:'corte-nino',    cat:'Corte',      name:'Corte de niño',             dur:20,  durMax:30,  price:10000,                icon:'👦',  desc:'Corte de cabello para niños' },
   { id:'corte-nina',    cat:'Corte',      name:'Corte de niña',             dur:25,  durMax:40,  price:15000,                icon:'👧',  desc:'Corte de cabello para niñas' },
-  { id:'corte-bebe',    cat:'Corte',      name:'Corte bebé',                dur:15,  durMax:20,  price:10000,                icon:'🍼',  desc:'Corte de cabello para bebés' },
-  { id:'rapado',        cat:'Corte',      name:'Corte rapado total',        dur:20,  durMax:30,  price:10000,                icon:'🪒',  desc:'Rapado completo de cabeza' },
-  { id:'patilla-barba', cat:'Corte',      name:'Patilla y barba',           dur:20,  durMax:30,  price:5000,                 icon:'🧔',  desc:'Arreglo de patilla y barba' },
+  { id:'corte-bebe',    cat:'Corte',      name:'Corte bebé',                dur:15,  durMax:20,  price:10000,                icon:'🍼',  desc:'Corte de cabello para bebés',           noHair:true },
+  { id:'rapado',        cat:'Corte',      name:'Corte rapado total',        dur:20,  durMax:30,  price:10000,                icon:'🪒',  desc:'Rapado completo de cabeza',              noHair:true },
+  { id:'patilla-barba', cat:'Corte',      name:'Patilla y barba',           dur:20,  durMax:30,  price:5000,                 icon:'🧔',  desc:'Arreglo de patilla y barba',            noHair:true },
   // ── COLOR ──
   { id:'tinte-r',       cat:'Color',      name:'Tinte en raíces',           dur:90,  durMax:150, price:37100, priceMax:57200, icon:'🎨',  desc:'Aplicación de color en raíces. Varía según el largo del cabello' },
   { id:'tinte-t',       cat:'Color',      name:'Tinte total',               dur:120, durMax:180, price:43800, priceMax:72000, icon:'🎨',  desc:'Coloración completa del cabello. Varía según el largo' },
@@ -634,9 +643,15 @@ document.addEventListener('DOMContentLoaded', () => {
   buildEmps();
   buildCal();
   syncNav();
-  // Auto-advance to step 2 if service pre-selected from URL
+  // Auto-advance if service pre-selected from URL (respetando paso de cabello)
   if(urlSvc && S.service) {
-    setTimeout(() => goToStep(2), 120);
+    if (needsHairQ(S.service)) {
+      updateConsultaHairBtn();
+      setTimeout(() => goToStep('1b'), 120);
+    } else {
+      S.bookingDur = S.service.dur;
+      setTimeout(() => goToStep(2), 120);
+    }
   }
 });
 
@@ -681,7 +696,7 @@ function renderSvcs() {
 }
 
 function needsHairQ(svc) {
-  return svc && svc.durMax && HAIR_CATS.includes(svc.cat);
+  return svc && svc.durMax && HAIR_CATS.includes(svc.cat) && !svc.noHair;
 }
 
 function pickSvc(id, el) {
@@ -1134,10 +1149,16 @@ function syncNav() {
   btn.textContent = n === 5 ? 'Confirmar reserva ✓' : 'Continuar →';
   btn.className = `btn-next ${n === 5 ? 'gold' : 'dark'}`;
 
+  const hint = document.getElementById('formHint');
+  if (hint) hint.hidden = !(n === 5 && !ok);
+
   if (n === 5) {
     ['fName','fPhone'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.oninput = syncNav;
+      if (el) {
+        el.oninput = syncNav;
+        el.onblur = () => { el.classList.add('dirty'); syncNav(); };
+      }
     });
   }
 }
