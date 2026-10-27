@@ -356,6 +356,42 @@
     .gm-del:hover { background: var(--red); }
     .gm-empty { text-align: center; padding: 2.5rem; color: var(--muted); font-size: .88rem; }
     @media(max-width:600px){ .gm-row { grid-template-columns: 1fr; } }
+
+    /* ── BLOCKED DAYS ── */
+    .bd-emp-tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .bd-emp-tab { padding: .5rem 1.1rem; border-radius: 100px; border: 1.5px solid var(--polar);
+      background: #fff; font-size: .82rem; color: var(--muted); cursor: pointer;
+      white-space: nowrap; transition: all .18s; font-family: 'Jost', sans-serif; }
+    .bd-emp-tab:hover { border-color: var(--cambridge); }
+    .bd-emp-tab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .bd-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px;
+      background: var(--polar); border-radius: 14px; overflow: hidden;
+      box-shadow: 0 1px 10px rgba(30,42,53,.06); }
+    .bd-day { background: #fff; min-height: 52px; padding: .45rem .35rem .3rem; cursor: pointer;
+      transition: background .15s; user-select: none; text-align: center; }
+    .bd-day:hover:not(.bd-disabled):not(.bd-offday) { background: #EEF4FB; }
+    .bd-day.bd-disabled { background: var(--off); pointer-events: none; }
+    .bd-day.bd-offday { background: #f5f5f5; }
+    .bd-day.bd-offday:hover { background: #eef4fb; }
+    .bd-day.bd-today .bd-num { background: var(--gold); color: #fff; border-radius: 50%;
+      width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; }
+    .bd-day.bd-blocked { background: #FFF0F0; }
+    .bd-day.bd-blocked:hover { background: #ffe4e4; }
+    .bd-day.bd-enabled { background: #F0FBF0; }
+    .bd-day.bd-enabled:hover { background: #e3f7e3; }
+    .bd-num { font-size: .82rem; font-weight: 500; color: var(--text); display: block; margin-bottom: .1rem; }
+    .bd-day.bd-disabled .bd-num { color: #ccc; }
+    .bd-day.bd-offday .bd-num { color: #bbb; }
+    .bd-day.bd-blocked .bd-num { color: var(--red); font-weight: 700; }
+    .bd-day.bd-enabled .bd-num { color: var(--green); font-weight: 700; }
+    .bd-flag { font-size: .68rem; display: block; }
+    .bd-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; font-size: .75rem;
+      color: var(--muted); margin-bottom: .9rem; align-items: center; }
+    .bd-legend-item { display: flex; align-items: center; gap: .35rem; }
+    .bd-swatch { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+    .bd-info { background: #FEFCE8; border: 1px solid #EAD87A; border-radius: 12px;
+      padding: .85rem 1.1rem; font-size: .82rem; color: #6B5A0A; margin-bottom: 1.25rem; line-height: 1.5; }
+
     @media(max-width:768px){
       .mobile-header { display: flex; align-items: center; justify-content: space-between;
         padding: 1rem 1.25rem; background: var(--dark); }
@@ -412,6 +448,7 @@
         <div class="sb-link active" onclick="showView('calendar')"><span>📅</span> Calendario</div>
         <div class="sb-link" onclick="showView('all')"><span>👥</span> Todas las citas</div>
         <div class="sb-link" onclick="showView('gallery')"><span>📸</span> Galería</div>
+        <div class="sb-link" onclick="showView('blocked')"><span>🗓</span> Días libres</div>
         <div class="sb-link" onclick="showView('export')"><span>📊</span> Exportar datos</div>
       </div>
     </nav>
@@ -486,6 +523,9 @@ let SEL_EMP = 'all';
 let CURRENT_VIEW = 'calendar';
 let CAL_YEAR = new Date().getFullYear();
 let CAL_MONTH = new Date().getMonth();
+let BD_EMP   = 'marta';
+let BD_YEAR  = new Date().getFullYear();
+let BD_MONTH = new Date().getMonth();
 
 // ═══════════════════════════════════
 // INIT
@@ -565,7 +605,7 @@ function loadView() {
   if (v === 'all') {
     document.getElementById('dateBar').style.display = 'flex';
     buildDateChips();
-    const filtered = filterBookings(all);
+    const filtered = filterBookings(all).filter(b => b.type !== 'bloqueado');
     renderStats(filtered);
     renderTimeline(filtered);
     document.getElementById('pageTitle').textContent = `Citas — ${fmtDate(SEL_DATE)}`;
@@ -582,6 +622,13 @@ function loadView() {
     document.getElementById('statsRow').innerHTML = '';
     document.getElementById('pageTitle').textContent = 'Galería de fotos';
     renderGallery();
+  }
+  if (v === 'blocked') {
+    document.getElementById('dateBar').style.display = 'none';
+    document.getElementById('empTabs').classList.add('hidden');
+    document.getElementById('statsRow').innerHTML = '';
+    document.getElementById('pageTitle').textContent = 'Días libres';
+    renderBlockedDays(all);
   }
   updatePageDate();
 }
@@ -638,6 +685,7 @@ function renderStats(bookings) {
 // TIMELINE
 // ═══════════════════════════════════
 function renderTimeline(bookings) {
+  bookings = bookings.filter(b => b.type !== 'bloqueado');
   const container = document.getElementById('agendaView');
 
   if (!bookings.length) {
@@ -702,6 +750,7 @@ function renderTimeline(bookings) {
 // UPCOMING LIST
 // ═══════════════════════════════════
 function renderUpcoming(bookings) {
+  bookings = bookings.filter(b => b.type !== 'bloqueado');
   const container = document.getElementById('agendaView');
   if (!bookings.length) {
     container.innerHTML = `<div class="empty-state"><div class="empty-icon">🌸</div><div class="empty-text">No hay citas próximas registradas</div></div>`;
@@ -819,9 +868,9 @@ function selectDateFromInput(val) {
 // EMPLOYEE TABS
 // ═══════════════════════════════════
 const EMPLOYEES = [
-  { id: 'marta',   name: 'Marta' },
-  { id: 'difrani', name: 'Difrani' },
-  { id: 'tatiana', name: 'Tatiana' },
+  { id: 'marta',   name: 'Marta',   days: [1,2,3,4,5,6] },
+  { id: 'difrani', name: 'Difrani', days: [5] },
+  { id: 'tatiana', name: 'Tatiana', days: [1,2,3,4,5,6] },
 ];
 function buildEmpTabs() {
   document.getElementById('empTabs').innerHTML = `
@@ -1095,6 +1144,7 @@ function renderMonthCalendar(all) {
     const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     return all.filter(b => {
       if (b.status === 'cancelada') return false;
+      if (b.type === 'bloqueado') return false;
       const bd = b.date || '';
       if (/^\d{4}-\d{2}-\d{2}$/.test(bd)) return bd === ds;
       try { return toLocalDateStr(new Date(bd)) === ds; } catch { return false; }
@@ -1351,6 +1401,205 @@ function gmSetMsg(txt, isErr = false) {
   el.textContent = txt;
   el.className = 'gm-msg' + (isErr ? ' err' : '');
   setTimeout(() => { if(el) el.textContent = ''; }, 4000);
+}
+
+// ═══════════════════════════════════
+// BLOCKED DAYS
+// ═══════════════════════════════════
+function renderBlockedDays(all) {
+  const container = document.getElementById('agendaView');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const year = BD_YEAR, month = BD_MONTH;
+  const emp = EMPLOYEES.find(e => e.id === BD_EMP);
+  const empDays = emp?.days || [1,2,3,4,5,6];
+
+  function isBlocked(iso) {
+    return all.some(b => b.type === 'bloqueado' && b.empId === BD_EMP && b.date === iso && b.status !== 'cancelada');
+  }
+  function isEnabled(iso) {
+    return all.some(b => b.type === 'habilitado' && b.empId === BD_EMP && b.date === iso && b.status !== 'cancelada');
+  }
+
+  const first = new Date(year, month, 1);
+  const last  = new Date(year, month + 1, 0);
+  const DOW_LABELS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const monthName = MONTHS_ES[month].charAt(0).toUpperCase() + MONTHS_ES[month].slice(1);
+
+  let gridHtml = DOW_LABELS.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  for (let i = 0; i < first.getDay(); i++) {
+    gridHtml += '<div class="bd-day bd-disabled"><span class="bd-num"></span></div>';
+  }
+
+  for (let d = 1; d <= last.getDate(); d++) {
+    const dt     = new Date(year, month, d);
+    const iso    = toInputDate(dt);
+    const isPast   = dt < today;
+    const isOffDay = !empDays.includes(dt.getDay());
+    const isToday  = dt.toDateString() === today.toDateString();
+    const blocked  = !isPast && !isOffDay && isBlocked(iso);
+    const enabled  = !isPast && isOffDay  && isEnabled(iso);
+
+    let cls = 'bd-day';
+    if (isPast)         cls += ' bd-disabled';
+    else if (blocked)   cls += ' bd-blocked';
+    else if (enabled)   cls += ' bd-enabled';
+    else if (isOffDay)  cls += ' bd-offday';
+    if (isToday)        cls += ' bd-today';
+
+    let onclick = '';
+    let flag = '<span class="bd-flag"></span>';
+    if (!isPast) {
+      if (isOffDay) {
+        onclick = `onclick="toggleEnableDay('${BD_EMP}','${iso}')"`;
+        flag = enabled ? '<span class="bd-flag">✅</span>' : '<span class="bd-flag">＋</span>';
+      } else {
+        onclick = `onclick="toggleBlockDay('${BD_EMP}','${iso}')"`;
+        flag = blocked ? '<span class="bd-flag">🚫</span>' : '<span class="bd-flag"></span>';
+      }
+    }
+    gridHtml += `<div class="${cls}" ${onclick}><span class="bd-num">${d}</span>${flag}</div>`;
+  }
+
+  const total  = first.getDay() + last.getDate();
+  const remain = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 0; i < remain; i++) {
+    gridHtml += '<div class="bd-day bd-disabled"><span class="bd-num"></span></div>';
+  }
+
+  const prefix = `${year}-${String(month+1).padStart(2,'0')}`;
+  const blockedCount = all.filter(b => b.type === 'bloqueado' && b.empId === BD_EMP && b.status !== 'cancelada' && (b.date||'').startsWith(prefix)).length;
+  const enabledCount = all.filter(b => b.type === 'habilitado' && b.empId === BD_EMP && b.status !== 'cancelada' && (b.date||'').startsWith(prefix)).length;
+
+  let countLabel = '';
+  if (blockedCount) countLabel += ` · <span style="font-size:.82rem;color:var(--red)">${blockedCount} bloqueado${blockedCount!==1?'s':''}</span>`;
+  if (enabledCount) countLabel += ` · <span style="font-size:.82rem;color:var(--green)">${enabledCount} extra${enabledCount!==1?'s':''}</span>`;
+
+  container.innerHTML = `
+    <div class="bd-info">
+      💡 Días de trabajo: haz clic para <strong>bloquear</strong> (🚫). Días libres: haz clic para <strong>habilitar</strong> un día extra (✅). Vuelve a hacer clic para revertir el cambio.
+    </div>
+    <div class="bd-emp-tabs">${EMPLOYEES.map(e =>
+      `<div class="bd-emp-tab ${BD_EMP===e.id?'active':''}" onclick="bdSetEmp('${e.id}')">${e.name}</div>`
+    ).join('')}</div>
+    <div style="background:#fff;border-radius:16px;padding:1.25rem;box-shadow:0 1px 12px rgba(30,42,53,.07)">
+      <div class="cal-nav" style="margin-bottom:.75rem">
+        <button class="cal-nav-btn" onclick="bdPrev()">← Anterior</button>
+        <span class="cal-month-title">${monthName} ${year}${countLabel}</span>
+        <button class="cal-nav-btn" onclick="bdNext()">Siguiente →</button>
+      </div>
+      <div class="bd-legend">
+        <div class="bd-legend-item"><div class="bd-swatch" style="background:#FFF0F0;border:1px solid #FFBBBB"></div> Bloqueado 🚫</div>
+        <div class="bd-legend-item"><div class="bd-swatch" style="background:#F0FBF0;border:1px solid #A8DBA8"></div> Día extra ✅</div>
+        <div class="bd-legend-item"><div class="bd-swatch" style="background:#f5f5f5;border:1px solid #e0e0e0"></div> Libre habitual (clic para habilitar)</div>
+        <div class="bd-legend-item"><div class="bd-swatch" style="background:#fff;border:1px solid var(--polar)"></div> Disponible (clic para bloquear)</div>
+      </div>
+      <div class="bd-grid">${gridHtml}</div>
+    </div>`;
+}
+
+async function toggleBlockDay(empId, dateStr) {
+  const all = getBookings();
+  const existing = all.find(b =>
+    b.type === 'bloqueado' && b.empId === empId &&
+    b.date === dateStr && b.status !== 'cancelada'
+  );
+
+  if (existing) {
+    const idx = all.findIndex(b => String(b.id) === String(existing.id));
+    if (idx !== -1) { all[idx].status = 'cancelada'; _cachedBookings = all; saveBookings(all); }
+    updateBookingInSheets(existing.id, { status: 'cancelada' });
+  } else {
+    const emp = EMPLOYEES.find(e => e.id === empId);
+    const blocked = {
+      id: `bloq_${empId}_${dateStr}_${Date.now()}`,
+      type: 'bloqueado',
+      svcName: 'Día libre',
+      svcId: 'bloqueado',
+      empId,
+      empName: emp?.name || empId,
+      date: dateStr,
+      time: '09:00',
+      duration: 540,
+      status: 'confirmada',
+      clientName: '—',
+      clientPhone: '—',
+      createdAt: new Date().toISOString(),
+    };
+    all.push(blocked);
+    _cachedBookings = all;
+    saveBookings(all);
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(blocked),
+    }).then(r => r.json()).then(data => {
+      if (data.id && data.id !== blocked.id) {
+        const allNow = getBookings();
+        const i = allNow.findIndex(b => b.id === blocked.id);
+        if (i !== -1) { allNow[i].id = data.id; _cachedBookings = allNow; saveBookings(allNow); }
+      }
+    }).catch(() => {});
+  }
+
+  renderBlockedDays(getBookings());
+}
+
+async function toggleEnableDay(empId, dateStr) {
+  const all = getBookings();
+  const existing = all.find(b =>
+    b.type === 'habilitado' && b.empId === empId &&
+    b.date === dateStr && b.status !== 'cancelada'
+  );
+
+  if (existing) {
+    const idx = all.findIndex(b => String(b.id) === String(existing.id));
+    if (idx !== -1) { all[idx].status = 'cancelada'; _cachedBookings = all; saveBookings(all); }
+    updateBookingInSheets(existing.id, { status: 'cancelada' });
+  } else {
+    const emp = EMPLOYEES.find(e => e.id === empId);
+    const entry = {
+      id: `hab_${empId}_${dateStr}_${Date.now()}`,
+      type: 'habilitado',
+      svcName: 'Día extra',
+      svcId: 'habilitado',
+      empId,
+      empName: emp?.name || empId,
+      date: dateStr,
+      time: '09:00',
+      duration: 0,
+      status: 'confirmada',
+      clientName: '—',
+      clientPhone: '—',
+      createdAt: new Date().toISOString(),
+    };
+    all.push(entry);
+    _cachedBookings = all;
+    saveBookings(all);
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(entry),
+    }).then(r => r.json()).then(data => {
+      if (data.id && data.id !== entry.id) {
+        const allNow = getBookings();
+        const i = allNow.findIndex(b => b.id === entry.id);
+        if (i !== -1) { allNow[i].id = data.id; _cachedBookings = allNow; saveBookings(allNow); }
+      }
+    }).catch(() => {});
+  }
+
+  renderBlockedDays(getBookings());
+}
+
+function bdSetEmp(id) { BD_EMP = id; renderBlockedDays(getBookings()); }
+function bdPrev() {
+  if (--BD_MONTH < 0) { BD_MONTH = 11; BD_YEAR--; }
+  renderBlockedDays(getBookings());
+}
+function bdNext() {
+  if (++BD_MONTH > 11) { BD_MONTH = 0; BD_YEAR++; }
+  renderBlockedDays(getBookings());
 }
 </script>
 </body>

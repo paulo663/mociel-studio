@@ -146,6 +146,19 @@
     .hair-lbl { font-size: .78rem; font-weight: 600; color: var(--text); margin-bottom: .1rem; }
     .hair-desc { font-size: .66rem; color: var(--muted); line-height: 1.3; }
 
+    .hair-estimate { display: none; background: #FDFAF3; border: 1.5px solid #E8D99A;
+      border-radius: var(--r); padding: 1rem 1.2rem; animation: fadeIn .25s ease; }
+    .hair-estimate.visible { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity:1; transform:none; } }
+    .hair-est-title { font-size: .68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: #9A7D20; margin-bottom: .65rem; }
+    .hair-est-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+    .hair-est-cell { background: #fff; border-radius: 10px; padding: .65rem .8rem;
+      border: 1px solid #EDE4B8; }
+    .hair-est-lbl { font-size: .65rem; color: var(--muted); margin-bottom: .2rem; }
+    .hair-est-val { font-size: 1.05rem; font-weight: 700; color: var(--dark); line-height: 1.1; }
+    .hair-est-note { font-size: .62rem; color: var(--muted); margin-top: .15rem; }
+
     .btn-consulta { display:inline-flex; align-items:center; gap:.6rem; margin-top:1.5rem;
       padding:.75rem 1.3rem; background:#25D366; color:#fff; border-radius:100px;
       font-family:'Jost',sans-serif; font-size:.85rem; font-weight:500; text-decoration:none;
@@ -412,6 +425,21 @@
           </div>
         </div>
       </div>
+      <!-- Estimado -->
+      <div id="hairEstimate" class="hair-estimate">
+        <div class="hair-est-title">Estimado para tu cabello</div>
+        <div class="hair-est-grid">
+          <div class="hair-est-cell">
+            <div class="hair-est-lbl">⏱ Duración aprox.</div>
+            <div class="hair-est-val" id="hairEstDur">—</div>
+          </div>
+          <div class="hair-est-cell">
+            <div class="hair-est-lbl">💰 Precio aprox.</div>
+            <div class="hair-est-val" id="hairEstPrice">—</div>
+            <div class="hair-est-note" id="hairEstPriceNote"></div>
+          </div>
+        </div>
+      </div>
       <!-- WhatsApp -->
       <a id="btnConsultaHair" href="#" target="_blank" rel="noopener" class="btn-consulta" style="margin-top:.25rem">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -625,6 +653,8 @@ let S = {
   activeCat: null, calY: new Date().getFullYear(), calM: new Date().getMonth(),
   hairLen: null, hairAbund: null, bookingDur: null,
 };
+let _blockedDates  = {}; // { empId: Set<'YYYY-MM-DD'> }
+let _enabledDates  = {}; // { empId: Set<'YYYY-MM-DD'> } — días extra habilitados
 
 // ═══════════════════════════════════════
 // INIT
@@ -707,6 +737,7 @@ function pickSvc(id, el) {
   el.classList.add('sel');
   if (needsHairQ(S.service)) {
     document.querySelectorAll('.hair-opt').forEach(o => o.classList.remove('sel'));
+    document.getElementById('hairEstimate')?.classList.remove('visible');
     updateConsultaHairBtn();
     setTimeout(() => goToStep('1b'), 120);
   } else {
@@ -717,10 +748,37 @@ function pickSvc(id, el) {
 function calcBookingDur() {
   const svc = S.service;
   if (!svc || !svc.durMax || S.hairLen === null || S.hairAbund === null) return null;
-  const lf = S.hairLen   / 3; // 0, 1/3, 2/3, 1
-  const af = S.hairAbund / 2; // 0, 1/2, 1
-  const combined = lf * 0.6 + af * 0.4;
-  return svc.dur + Math.round(combined * (svc.durMax - svc.dur));
+  const lf = S.hairLen   / 3;
+  const af = S.hairAbund / 2;
+  return svc.dur + Math.round((lf * 0.6 + af * 0.4) * (svc.durMax - svc.dur));
+}
+
+function calcBookingPrice() {
+  const svc = S.service;
+  if (!svc || S.hairLen === null || S.hairAbund === null) return null;
+  if (!svc.priceMax) return svc.price;
+  const lf = S.hairLen   / 3;
+  const af = S.hairAbund / 2;
+  return svc.price + Math.round((lf * 0.6 + af * 0.4) * (svc.priceMax - svc.price));
+}
+
+function updateHairEstimate() {
+  const box = document.getElementById('hairEstimate');
+  if (!box) return;
+  if (S.hairLen === null || S.hairAbund === null) {
+    box.classList.remove('visible');
+    return;
+  }
+  const dur   = calcBookingDur();
+  const price = calcBookingPrice();
+  const svc   = S.service;
+
+  document.getElementById('hairEstDur').textContent   = dur   ? fmtDur(dur) : '—';
+  document.getElementById('hairEstPrice').textContent = price ? `₡${price.toLocaleString()}` : '—';
+  document.getElementById('hairEstPriceNote').textContent =
+    (svc?.priceMax && price !== svc.price) ? 'Precio final según trabajo' : '';
+
+  box.classList.add('visible');
 }
 
 function pickHair(type, val, el) {
@@ -733,6 +791,7 @@ function pickHair(type, val, el) {
   }
   el.classList.add('sel');
   S.bookingDur = calcBookingDur();
+  updateHairEstimate();
   updateConsultaBtn();
   syncNav();
 }
@@ -823,14 +882,20 @@ function buildCal() {
   let html = '';
   for (let i = 0; i < first.getDay(); i++) html += '<div class="cal-d empty"></div>';
 
+  const empIdForBlock = S.employee?.id !== 'any' ? S.employee?.id : null;
+  const blockedSet  = empIdForBlock ? (_blockedDates[empIdForBlock] || new Set()) : new Set();
+  const enabledSet  = empIdForBlock ? (_enabledDates[empIdForBlock] || new Set()) : new Set();
+
   for (let d = 1; d <= last.getDate(); d++) {
     const dt = new Date(y, m, d);
     const past    = dt < today;
-    const offDay  = !empDays.includes(dt.getDay());
+    const iso     = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const offDay  = !empDays.includes(dt.getDay()) && !enabledSet.has(iso);
+    const blocked = blockedSet.has(iso);
     const isToday = dt.toDateString() === today.toDateString();
     const isSel   = S.date && dt.toDateString() === S.date.toDateString();
-    const disabled = past || offDay;
-    const cls = [past?'past':'', offDay?'sunday':'', isToday&&!isSel?'today':'', isSel?'sel':''].filter(Boolean).join(' ');
+    const disabled = past || offDay || blocked;
+    const cls = [past?'past':'', (offDay||blocked)?'sunday':'', isToday&&!isSel?'today':'', isSel?'sel':''].filter(Boolean).join(' ');
     const cb  = !disabled ? `onclick="pickDate(${y},${m},${d})"` : '';
     html += `<div class="cal-d ${cls}" ${cb}>${d}</div>`;
   }
@@ -848,9 +913,33 @@ function buildCal() {
 
 function pickDate(y, m, d) {
   S.date = new Date(y, m, d);
-  S.time = null; // reset time when date changes
+  S.time = null;
   buildCal();
   syncNav();
+}
+
+async function loadBlockedDates(empId) {
+  if (!empId || empId === 'any') return;
+  try {
+    const res = await fetch(`${CFG.APPS_SCRIPT_URL}?action=list`);
+    const json = await res.json();
+    if (json.ok && Array.isArray(json.bookings)) {
+      const blocked  = new Set();
+      const enabled  = new Set();
+      json.bookings.forEach(b => {
+        if (b.status === 'cancelada' || !b.date) return;
+        let iso = b.date;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+          try { const d = new Date(iso); iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; } catch { return; }
+        }
+        if (b.type === 'bloqueado' && b.empId === empId) blocked.add(iso);
+        if (b.type === 'habilitado' && b.empId === empId) enabled.add(iso);
+      });
+      _blockedDates[empId] = blocked;
+      _enabledDates[empId] = enabled;
+      if (S.step === 3) buildCal();
+    }
+  } catch(e) {}
 }
 
 // ═══════════════════════════════════════
@@ -895,8 +984,15 @@ async function buildSlots() {
   const dayNum = S.date.getDay();
   const empId  = S.employee?.id !== 'any' ? S.employee?.id : null;
 
+  const enabledToday = new Set(
+    remoteBookings
+      .filter(b => b.type === 'habilitado' && b.status !== 'cancelada' && b.date === dstr)
+      .map(b => b.empId)
+  );
+
   const availableEmps = EMPLOYEES.filter(e =>
-    !e.any && e.days.includes(dayNum) &&
+    !e.any &&
+    (e.days.includes(dayNum) || enabledToday.has(e.id)) &&
     (!e.cats || e.cats.includes(S.service.cat))
   );
 
@@ -1122,7 +1218,7 @@ function goToStep(n) {
   next.classList.add('active');
 
   if (n === 2) { buildEmps(); updateConsultaBtn(); }
-  if (n === 3) buildCal();
+  if (n === 3) { buildCal(); loadBlockedDates(S.employee?.id); }
   if (n === 4) buildSlots();
   if (n === 5) buildSummary();
 
