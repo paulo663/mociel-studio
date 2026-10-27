@@ -304,7 +304,7 @@ select {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 90px;
+    height: 110px;
 }
 
 .nav-logo {
