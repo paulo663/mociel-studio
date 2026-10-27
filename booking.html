@@ -129,6 +129,22 @@
       margin-top: .85rem; padding-top: .7rem; border-top: 1px solid var(--polar); }
     .svc-dur { font-size: .73rem; color: var(--muted); }
     .svc-dur-note { font-size: .68rem; color: var(--sand); font-style: italic; }
+
+    /* ── HAIR LENGTH SELECTOR ── */
+    .hair-box { margin-top: 1.5rem; padding: 1.25rem 1.25rem 1rem; background: var(--card);
+      border: 1px solid var(--polar); border-radius: var(--r); }
+    .hair-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem;
+      font-weight: 600; color: var(--text); margin-bottom: .25rem; }
+    .hair-sub { font-size: .8rem; color: var(--muted); margin: 0 0 1rem; }
+    .hair-opts { display: flex; gap: .65rem; }
+    .hair-opt { flex: 1; cursor: pointer; padding: .9rem .5rem; border: 2px solid var(--polar);
+      border-radius: var(--r-sm); text-align: center; transition: border-color .18s, background .18s; }
+    .hair-opt:hover { border-color: var(--blue); }
+    .hair-opt.sel { border-color: var(--blue); background: #f0f4ff; }
+    .hair-icon { font-size: 1.4rem; margin-bottom: .35rem; }
+    .hair-lbl { font-size: .82rem; font-weight: 600; color: var(--text); margin-bottom: .15rem; }
+    .hair-desc { font-size: .7rem; color: var(--muted); line-height: 1.3; }
+
     .btn-consulta { display:inline-flex; align-items:center; gap:.6rem; margin-top:1.5rem;
       padding:.75rem 1.3rem; background:#25D366; color:#fff; border-radius:100px;
       font-family:'Jost',sans-serif; font-size:.85rem; font-weight:500; text-decoration:none;
@@ -341,6 +357,28 @@
     </div>
     <div class="cat-tabs" id="catTabs"></div>
     <div class="svc-grid" id="svcGrid"></div>
+    <!-- Pregunta de largo de cabello (solo servicios de cabello con rango) -->
+    <div id="hairLengthBox" class="hair-box hidden">
+      <div class="hair-title">¿Cómo es tu cabello?</div>
+      <p class="hair-sub">Esto nos ayuda a reservar el tiempo correcto para ti</p>
+      <div class="hair-opts">
+        <div class="hair-opt" data-val="short" onclick="pickHair('short',this)">
+          <div class="hair-icon">💇</div>
+          <div class="hair-lbl">Corto</div>
+          <div class="hair-desc">Hasta los hombros</div>
+        </div>
+        <div class="hair-opt" data-val="medium" onclick="pickHair('medium',this)">
+          <div class="hair-icon">💇‍♀️</div>
+          <div class="hair-lbl">Largo</div>
+          <div class="hair-desc">Hasta la cintura</div>
+        </div>
+        <div class="hair-opt" data-val="long" onclick="pickHair('long',this)">
+          <div class="hair-icon">🦱</div>
+          <div class="hair-lbl">Muy largo o abundante</div>
+          <div class="hair-desc">Más abajo de la cintura</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- STEP 2 — ESPECIALISTA -->
@@ -537,10 +575,13 @@ const EMPLOYEES = [
 // ═══════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════
+const HAIR_CATS = ['Corte','Color','Tratamiento','Peinado'];
+
 let S = {
   step: 1, goBack: false,
   service: null, employee: null, date: null, time: null, client: {},
   activeCat: null, calY: new Date().getFullYear(), calM: new Date().getMonth(),
+  hairLength: null, bookingDur: null,
 };
 
 // ═══════════════════════════════════════
@@ -606,9 +647,33 @@ function renderSvcs() {
     ).join('');
 }
 
+function needsHairQ(svc) {
+  return svc && svc.durMax && HAIR_CATS.includes(svc.cat);
+}
+
 function pickSvc(id, el) {
   S.service = SERVICES.find(s => s.id === id);
+  S.hairLength = null;
+  S.bookingDur = needsHairQ(S.service) ? null : (S.service?.dur ?? null);
   document.querySelectorAll('.svc-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  const box = document.getElementById('hairLengthBox');
+  if (needsHairQ(S.service)) {
+    box.classList.remove('hidden');
+    box.querySelectorAll('.hair-opt').forEach(o => o.classList.remove('sel'));
+  } else {
+    box.classList.add('hidden');
+  }
+  syncNav();
+}
+
+function pickHair(val, el) {
+  S.hairLength = val;
+  const svc = S.service;
+  if (val === 'short')  S.bookingDur = svc.dur;
+  else if (val === 'medium') S.bookingDur = Math.round((svc.dur + svc.durMax) / 2);
+  else                  S.bookingDur = svc.durMax;
+  document.querySelectorAll('.hair-opt').forEach(o => o.classList.remove('sel'));
   el.classList.add('sel');
   syncNav();
 }
@@ -716,7 +781,8 @@ function buildSlots() {
   const dateStr = `${dow} ${S.date.getDate()} de ${MONTHS_ES_SHORT[S.date.getMonth()]}`;
   document.getElementById('step4Sub').textContent = `Disponibilidad para el ${dateStr}`;
   document.getElementById('slotSvcName').textContent = S.service.name;
-  document.getElementById('slotDur').textContent = fmtDur(S.service.dur, S.service.durMax);
+  document.getElementById('slotDur').textContent = S.bookingDur
+    ? fmtDur(S.bookingDur) : fmtDur(S.service.dur, S.service.durMax);
 
   const bookings = getStoredBookings();
   const dstr = S.date.toDateString();
@@ -728,7 +794,7 @@ function buildSlots() {
 
   const start = CFG.HOUR_START * 60;
   const end   = CFG.HOUR_END   * 60;
-  const dur   = S.service.dur;
+  const dur   = S.bookingDur || S.service.dur;
 
   let html = '';
   for (let t = start; t <= end - dur; t += CFG.INTERVAL) {
@@ -793,7 +859,7 @@ async function submitBooking() {
     id: Date.now().toString(),
     date: S.date.toDateString(),
     time: S.time,
-    duration: S.service.dur,
+    duration: S.bookingDur || S.service.dur,
     svcId: S.service.id,
     svcName: S.service.name,
     svcPrice: S.service.price,
@@ -949,8 +1015,9 @@ function syncNav() {
   document.getElementById('bkNav').style.display = n === 6 ? 'none' : 'flex';
   document.getElementById('stepCtr').textContent = n < 6 ? `Paso ${n} de 5` : '';
 
-  const ok = (n===1 && S.service) || (n===2 && S.employee) ||
-             (n===3 && S.date)    || (n===4 && S.time)     || (n===5 && formOk());
+  const step1ok = S.service && (!needsHairQ(S.service) || S.hairLength);
+  const ok = (n===1 && step1ok)  || (n===2 && S.employee) ||
+             (n===3 && S.date)   || (n===4 && S.time)     || (n===5 && formOk());
 
   const btn = document.getElementById('btnNext');
   btn.disabled = !ok;
