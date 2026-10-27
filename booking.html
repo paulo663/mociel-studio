@@ -1075,7 +1075,7 @@ async function submitBooking() {
     duration: S.bookingDur || S.service.dur,
     svcId: S.service.id,
     svcName: S.service.name,
-    svcPrice: S.service.price,
+    svcPrice: calcBookingPrice() ?? S.service.price,
     svcIcon: S.service.icon,
     empId: S.employee.id,
     empName: S.employee.id === 'any' ? 'Sin preferencia' : S.employee.name,

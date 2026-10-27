@@ -784,7 +784,7 @@ function upcomingCard(b) {
         </div>
         <div class="up-datetime">
           <div class="up-time">⏰ ${fmtTime(b.time)}</div>
-          <div class="up-time-label">${b.duration ? b.duration + ' min' : ''}</div>
+          <div class="up-time-label">${b.duration ? b.duration + ' min' : ''}${b.svcPrice ? ' · ₡' + b.svcPrice.toLocaleString() : ''}</div>
         </div>
       </div>
       <div class="up-body">
