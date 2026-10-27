@@ -41,7 +41,7 @@
     .bk-back:hover { color: rgba(255,255,255,.8); }
 
     /* ── PROGRESS ── */
-    .bk-progress { padding: 1.25rem 1.5rem 1.5rem; }
+    .bk-progress { padding: 0.5rem 1.5rem 0.65rem; }
     .steps-bar {
       display: flex; align-items: center;
       max-width: 520px; margin: 0 auto; gap: 0;
@@ -83,7 +83,7 @@
     }
 
     /* ── STEPS ── */
-    .step { display: none; padding: 1.75rem 1.5rem 5.5rem; max-width: 700px; margin: 0 auto;
+    .step { display: none; padding: 1.1rem 1.5rem 3.5rem; max-width: 700px; margin: 0 auto;
       animation: slideIn .3s ease; }
     .step.active { display: block; }
     .step.back { animation: slideBack .3s ease; }
@@ -97,7 +97,7 @@
     .step-h1 { font-family: 'Cormorant Garamond', Georgia, serif;
       font-size: clamp(1.55rem, 4vw, 2.1rem); font-weight: 300;
       color: var(--dark); line-height: 1.2; margin-bottom: .4rem; }
-    .step-sub { font-size: .88rem; color: var(--muted); font-weight: 300; margin-bottom: 1.75rem; }
+    .step-sub { font-size: .88rem; color: var(--muted); font-weight: 300; margin-bottom: 1rem; }
 
     /* ── CATEGORY TABS ── */
     .cat-tabs { display: flex; gap: .4rem; margin-bottom: 1.25rem;
@@ -112,7 +112,7 @@
 
     /* ── SERVICE GRID ── */
     .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .85rem; }
-    .svc-card { background: #fff; border-radius: var(--r); padding: 1.1rem;
+    .svc-card { background: #fff; border-radius: var(--r); padding: .8rem;
       cursor: pointer; border: 2px solid transparent; transition: all .22s;
       box-shadow: var(--sh); position: relative; }
     .svc-card:hover { transform: translateY(-2px); box-shadow: var(--sh2); border-color: var(--cambridge); }
@@ -121,7 +121,7 @@
       width: 18px; height: 18px; background: var(--gold); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: .58rem; color: #fff; font-weight: 700; }
-    .svc-icon { font-size: 1.4rem; margin-bottom: .6rem; display: block; }
+    .svc-icon { font-size: 1.4rem; margin-bottom: .3rem; display: block; }
     .svc-name { font-weight: 500; font-size: .92rem; color: var(--text); margin-bottom: .25rem; }
     .svc-desc { font-size: .78rem; color: var(--muted); line-height: 1.45; }
     .svc-foot { display: flex; align-items: center; justify-content: space-between;
@@ -315,6 +315,9 @@
     .form-hint { font-size: .78rem; color: var(--muted); text-align: center; margin-top: .35rem; }
 
     /* ── RESPONSIVE ── */
+    @media(max-width:600px) {
+      .bk-logo img { height: 65px; width: 192px; }
+    }
     @media(max-width:480px) {
       .svc-grid { grid-template-columns: 1fr 1fr; }
       .emp-grid { grid-template-columns: repeat(2,1fr); }
