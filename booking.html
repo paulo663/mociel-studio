@@ -430,7 +430,7 @@
   <div class="step" id="step3">
     <span class="step-tag">Paso 3</span>
     <h1 class="step-h1">¿Qué día te viene bien?</h1>
-    <p class="step-sub">Abierto de lunes a sábado · 9:00 a 18:00</p>
+    <p class="step-sub">Abierto de lunes a sábado · 9 am a 6 pm</p>
     <div class="cal-wrap">
       <div class="cal-head">
         <button class="cal-nav" id="calPrev">‹</button>
@@ -873,7 +873,7 @@ function buildSlots() {
     });
     const isSel = S.time === ts;
     html += `<div class="slot ${taken?'taken':''} ${isSel?'sel':''}"
-      ${!taken ? `onclick="pickSlot('${ts}',this)"` : ''}>${ts}</div>`;
+      ${!taken ? `onclick="pickSlot('${ts}',this)"` : ''}>${fmt12(ts)}</div>`;
   }
   document.getElementById('slotsGrid').innerHTML = html ||
     '<p style="color:var(--muted);grid-column:1/-1">No hay horarios disponibles.</p>';
@@ -901,7 +901,7 @@ function buildSummary() {
       <div class="summary-val">${S.employee.id==='any'?'Sin preferencia':S.employee.name}</div></div></div>
     <div class="summary-row"><span class="summary-ico">📅</span><div>
       <div class="summary-lbl">Fecha y hora</div>
-      <div class="summary-val">${dateStr} · ${S.time}</div></div></div>
+      <div class="summary-val">${dateStr} · ${fmt12(S.time)}</div></div></div>
     <div class="summary-row"><span class="summary-ico">💰</span><div>
       <div class="summary-lbl">Precio estimado</div>
       <div class="summary-val">₡${S.service.price.toLocaleString()}</div></div></div>`;
@@ -953,7 +953,7 @@ async function submitBooking() {
 
 function buildConfirmation(b) {
   const dow = DAYS_ES[S.date.getDay()];
-  const dateStr = `${capitalize(dow)} ${S.date.getDate()} de ${MONTHS_ES_SHORT[S.date.getMonth()]} · ${b.time}`;
+  const dateStr = `${capitalize(dow)} ${S.date.getDate()} de ${MONTHS_ES_SHORT[S.date.getMonth()]} · ${fmt12(b.time)}`;
 
   document.getElementById('confirmDetails').innerHTML = `
     <div class="confirm-detail-row"><span class="confirm-detail-ico">${b.svcIcon}</span><div>
@@ -972,9 +972,9 @@ function buildConfirmation(b) {
 
   const msg = encodeURIComponent(
     `Hola Mon Ciel Studio, reservé una cita:\n\n`+
-    `${b.svcIcon} *${b.svcName}*\n📅 ${dateStr}\n`+
-    `${b.empId!=='any'?`👤 ${b.empName}\n`:''}\n`+
-    `Mi nombre es ${b.clientName}. ¡Nos vemos pronto! ✨`
+    `${b.svcIcon} *${b.svcName}*\n${dateStr}\n`+
+    `${b.empId!=='any'?`Con ${b.empName}\n`:''}\n`+
+    `Mi nombre es ${b.clientName}.`
   );
   document.getElementById('btnWa').href = `https://wa.me/${CFG.WHATSAPP}?text=${msg}`;
 
@@ -1137,6 +1137,12 @@ function fmtDur(m, mMax) {
   return mMax ? `${fmt(m)} – ${fmt(mMax)}` : fmt(m);
 }
 function t2m(ts) { const [h,m] = ts.split(':').map(Number); return h*60+m; }
+function fmt12(ts) {
+  const [h, m] = ts.split(':').map(Number);
+  const period = h < 12 ? 'am' : 'pm';
+  const h12 = h % 12 || 12;
+  return m === 0 ? `${h12} ${period}` : `${h12}:${String(m).padStart(2,'0')} ${period}`;
+}
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 </script>
 </body>
