@@ -132,18 +132,20 @@
 
     /* ── HAIR LENGTH SELECTOR ── */
     .hair-box { margin-top: 1.5rem; padding: 1.25rem 1.25rem 1rem; background: var(--card);
-      border: 1px solid var(--polar); border-radius: var(--r); }
+      border: 1px solid var(--polar); border-radius: var(--r); display: flex; flex-direction: column; gap: 1rem; }
     .hair-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem;
-      font-weight: 600; color: var(--text); margin-bottom: .25rem; }
-    .hair-sub { font-size: .8rem; color: var(--muted); margin: 0 0 1rem; }
-    .hair-opts { display: flex; gap: .65rem; }
-    .hair-opt { flex: 1; cursor: pointer; padding: .9rem .5rem; border: 2px solid var(--polar);
+      font-weight: 600; color: var(--text); margin-bottom: .2rem; }
+    .hair-sub { font-size: .8rem; color: var(--muted); margin: 0; }
+    .hair-section-lbl { font-size: .72rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; }
+    .hair-opts { display: flex; gap: .5rem; }
+    .hair-opt { flex: 1; cursor: pointer; padding: .75rem .4rem; border: 2px solid var(--polar);
       border-radius: var(--r-sm); text-align: center; transition: border-color .18s, background .18s; }
     .hair-opt:hover { border-color: var(--blue); }
     .hair-opt.sel { border-color: var(--blue); background: #f0f4ff; }
-    .hair-icon { font-size: 1.4rem; margin-bottom: .35rem; }
-    .hair-lbl { font-size: .82rem; font-weight: 600; color: var(--text); margin-bottom: .15rem; }
-    .hair-desc { font-size: .7rem; color: var(--muted); line-height: 1.3; }
+    .hair-icon { font-size: 1.2rem; margin-bottom: .3rem; }
+    .hair-lbl { font-size: .78rem; font-weight: 600; color: var(--text); margin-bottom: .1rem; }
+    .hair-desc { font-size: .66rem; color: var(--muted); line-height: 1.3; }
 
     .btn-consulta { display:inline-flex; align-items:center; gap:.6rem; margin-top:1.5rem;
       padding:.75rem 1.3rem; background:#25D366; color:#fff; border-radius:100px;
@@ -359,23 +361,55 @@
     <div class="svc-grid" id="svcGrid"></div>
     <!-- Pregunta de largo de cabello (solo servicios de cabello con rango) -->
     <div id="hairLengthBox" class="hair-box hidden">
-      <div class="hair-title">¿Cómo es tu cabello?</div>
-      <p class="hair-sub">Esto nos ayuda a reservar el tiempo correcto para ti</p>
-      <div class="hair-opts">
-        <div class="hair-opt" data-val="short" onclick="pickHair('short',this)">
-          <div class="hair-icon">💇</div>
-          <div class="hair-lbl">Corto</div>
-          <div class="hair-desc">Hasta los hombros</div>
+      <div>
+        <div class="hair-title">¿Cómo es tu cabello?</div>
+        <p class="hair-sub">Esto nos ayuda a reservar el tiempo correcto para ti</p>
+      </div>
+      <!-- Largo -->
+      <div>
+        <div class="hair-section-lbl">Largo</div>
+        <div class="hair-opts" id="hairLengthOpts">
+          <div class="hair-opt" onclick="pickHair('len',0,this)">
+            <div class="hair-icon">✂️</div>
+            <div class="hair-lbl">Corto</div>
+            <div class="hair-desc">Hasta los hombros</div>
+          </div>
+          <div class="hair-opt" onclick="pickHair('len',1,this)">
+            <div class="hair-icon">💇</div>
+            <div class="hair-lbl">Espalda media</div>
+            <div class="hair-desc">Mitad de la espalda</div>
+          </div>
+          <div class="hair-opt" onclick="pickHair('len',2,this)">
+            <div class="hair-icon">💇‍♀️</div>
+            <div class="hair-lbl">Largo</div>
+            <div class="hair-desc">Hasta la cintura</div>
+          </div>
+          <div class="hair-opt" onclick="pickHair('len',3,this)">
+            <div class="hair-icon">🦱</div>
+            <div class="hair-lbl">Muy largo</div>
+            <div class="hair-desc">Más abajo de la cintura</div>
+          </div>
         </div>
-        <div class="hair-opt" data-val="medium" onclick="pickHair('medium',this)">
-          <div class="hair-icon">💇‍♀️</div>
-          <div class="hair-lbl">Largo</div>
-          <div class="hair-desc">Hasta la cintura</div>
-        </div>
-        <div class="hair-opt" data-val="long" onclick="pickHair('long',this)">
-          <div class="hair-icon">🦱</div>
-          <div class="hair-lbl">Muy largo o abundante</div>
-          <div class="hair-desc">Más abajo de la cintura</div>
+      </div>
+      <!-- Abundancia -->
+      <div>
+        <div class="hair-section-lbl">Abundancia</div>
+        <div class="hair-opts" id="hairAbundOpts">
+          <div class="hair-opt" onclick="pickHair('abund',0,this)">
+            <div class="hair-icon">🌿</div>
+            <div class="hair-lbl">Poco abundante</div>
+            <div class="hair-desc">Cabello fino o escaso</div>
+          </div>
+          <div class="hair-opt" onclick="pickHair('abund',1,this)">
+            <div class="hair-icon">🌳</div>
+            <div class="hair-lbl">Abundante</div>
+            <div class="hair-desc">Volumen normal</div>
+          </div>
+          <div class="hair-opt" onclick="pickHair('abund',2,this)">
+            <div class="hair-icon">🌲</div>
+            <div class="hair-lbl">Muy abundante</div>
+            <div class="hair-desc">Mucho volumen o grueso</div>
+          </div>
         </div>
       </div>
     </div>
@@ -581,7 +615,7 @@ let S = {
   step: 1, goBack: false,
   service: null, employee: null, date: null, time: null, client: {},
   activeCat: null, calY: new Date().getFullYear(), calM: new Date().getMonth(),
-  hairLength: null, bookingDur: null,
+  hairLen: null, hairAbund: null, bookingDur: null,
 };
 
 // ═══════════════════════════════════════
@@ -653,7 +687,7 @@ function needsHairQ(svc) {
 
 function pickSvc(id, el) {
   S.service = SERVICES.find(s => s.id === id);
-  S.hairLength = null;
+  S.hairLen = null; S.hairAbund = null;
   S.bookingDur = needsHairQ(S.service) ? null : (S.service?.dur ?? null);
   document.querySelectorAll('.svc-card').forEach(c => c.classList.remove('sel'));
   el.classList.add('sel');
@@ -667,14 +701,25 @@ function pickSvc(id, el) {
   syncNav();
 }
 
-function pickHair(val, el) {
-  S.hairLength = val;
+function calcBookingDur() {
   const svc = S.service;
-  if (val === 'short')  S.bookingDur = svc.dur;
-  else if (val === 'medium') S.bookingDur = Math.round((svc.dur + svc.durMax) / 2);
-  else                  S.bookingDur = svc.durMax;
-  document.querySelectorAll('.hair-opt').forEach(o => o.classList.remove('sel'));
+  if (!svc || !svc.durMax || S.hairLen === null || S.hairAbund === null) return null;
+  const lf = S.hairLen   / 3; // 0, 1/3, 2/3, 1
+  const af = S.hairAbund / 2; // 0, 1/2, 1
+  const combined = lf * 0.6 + af * 0.4;
+  return svc.dur + Math.round(combined * (svc.durMax - svc.dur));
+}
+
+function pickHair(type, val, el) {
+  if (type === 'len') {
+    S.hairLen = val;
+    document.querySelectorAll('#hairLengthOpts .hair-opt').forEach(o => o.classList.remove('sel'));
+  } else {
+    S.hairAbund = val;
+    document.querySelectorAll('#hairAbundOpts .hair-opt').forEach(o => o.classList.remove('sel'));
+  }
   el.classList.add('sel');
+  S.bookingDur = calcBookingDur();
   syncNav();
 }
 
@@ -1015,7 +1060,7 @@ function syncNav() {
   document.getElementById('bkNav').style.display = n === 6 ? 'none' : 'flex';
   document.getElementById('stepCtr').textContent = n < 6 ? `Paso ${n} de 5` : '';
 
-  const step1ok = S.service && (!needsHairQ(S.service) || S.hairLength);
+  const step1ok = S.service && (!needsHairQ(S.service) || (S.hairLen !== null && S.hairAbund !== null));
   const ok = (n===1 && step1ok)  || (n===2 && S.employee) ||
              (n===3 && S.date)   || (n===4 && S.time)     || (n===5 && formOk());
 
