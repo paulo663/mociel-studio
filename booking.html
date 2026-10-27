@@ -776,7 +776,7 @@ function updateHairEstimate() {
   document.getElementById('hairEstDur').textContent   = dur   ? fmtDur(dur) : '—';
   document.getElementById('hairEstPrice').textContent = price ? `₡${price.toLocaleString()}` : '—';
   document.getElementById('hairEstPriceNote').textContent =
-    (svc?.priceMax && price !== svc.price) ? 'Precio final según trabajo' : '';
+    (svc?.priceMax && price !== svc.price) ? 'Puede variar según la condición del cabello al llegar al salón' : '';
 
   box.classList.add('visible');
 }

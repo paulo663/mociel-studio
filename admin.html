@@ -947,7 +947,10 @@ function openModal(id) {
       <div class="modal-lbl">Notas</div><div class="modal-val">${b.clientNotes}</div></div></div>`:''}
     <hr class="modal-divider">
     <div class="modal-row"><span class="modal-ico">💰</span><div>
-      <div class="modal-lbl">Precio estimado</div><div class="modal-val">₡${(b.svcPrice||0).toLocaleString()}</div></div></div>
+      <div class="modal-lbl">Precio estimado</div>
+      <div class="modal-val">₡${(b.svcPrice||0).toLocaleString()}</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">Puede variar según la condición del cabello al llegar al salón</div>
+      </div></div>
     <div class="modal-row"><span class="modal-ico">🔖</span><div>
       <div class="modal-lbl">Estado</div><div class="modal-val"><span class="status-chip ${chipClass}">${chipLabel}</span></div></div></div>
     ${durationExtra}`;
