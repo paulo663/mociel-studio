@@ -841,7 +841,7 @@ function pickDate(y, m, d) {
 // ═══════════════════════════════════════
 // STEP 4 — TIME SLOTS
 // ═══════════════════════════════════════
-function buildSlots() {
+async function buildSlots() {
   if (!S.date || !S.service) return;
   const dow = DAYS_ES[S.date.getDay()];
   const dateStr = `${dow} ${S.date.getDate()} de ${MONTHS_ES_SHORT[S.date.getMonth()]}`;
@@ -850,12 +850,36 @@ function buildSlots() {
   document.getElementById('slotDur').textContent = S.bookingDur
     ? fmtDur(S.bookingDur) : fmtDur(S.service.dur, S.service.durMax);
 
-  const bookings = getStoredBookings();
-  const dstr     = S.date.toDateString();
-  const dayNum   = S.date.getDay();
-  const empId    = S.employee?.id !== 'any' ? S.employee?.id : null;
+  // Mostrar estado de carga
+  document.getElementById('slotsGrid').innerHTML =
+    '<p style="color:var(--muted);grid-column:1/-1;text-align:center">Consultando disponibilidad...</p>';
 
-  // Especialistas disponibles para este servicio en este día (excluye "sin preferencia")
+  // Obtener reservas: Google Sheets + localStorage (deduplicadas por id)
+  let remoteBookings = [];
+  try {
+    const res = await fetch(`${CFG.APPS_SCRIPT_URL}?action=list`);
+    const json = await res.json();
+    if (json.ok && Array.isArray(json.bookings)) {
+      // Normalizar fecha: el sheet devuelve 'yyyy-MM-dd', localStorage usa toDateString()
+      remoteBookings = json.bookings.map(b => ({
+        ...b,
+        date: b.date ? new Date(b.date + 'T12:00:00').toDateString() : b.date,
+        empId: (b.empId || b.empName || '').toLowerCase().replace('sin preferencia','any'),
+      }));
+    }
+  } catch (e) { /* si falla la red, continúa con localStorage */ }
+
+  const localBookings = getStoredBookings();
+  const remoteIds = new Set(remoteBookings.map(b => String(b.id)));
+  const bookings = [
+    ...remoteBookings,
+    ...localBookings.filter(b => !remoteIds.has(String(b.id))),
+  ];
+
+  const dstr   = S.date.toDateString();
+  const dayNum = S.date.getDay();
+  const empId  = S.employee?.id !== 'any' ? S.employee?.id : null;
+
   const availableEmps = EMPLOYEES.filter(e =>
     !e.any && e.days.includes(dayNum) &&
     (!e.cats || e.cats.includes(S.service.cat))
@@ -879,10 +903,8 @@ function buildSlots() {
     const ts = `${h}:${min}`;
     let taken;
     if (empId) {
-      // Especialista específica: bloqueado si ella tiene cita
       taken = isEmpTaken(empId, t);
     } else {
-      // Sin preferencia: bloqueado solo si TODAS las especialistas disponibles están ocupadas
       taken = availableEmps.length > 0 && availableEmps.every(e => isEmpTaken(e.id, t));
     }
     const isSel = S.time === ts;
