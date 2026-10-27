@@ -432,6 +432,7 @@
           <div class="hair-est-cell">
             <div class="hair-est-lbl">⏱ Duración aprox.</div>
             <div class="hair-est-val" id="hairEstDur">—</div>
+            <div class="hair-est-note" id="hairEstDurNote"></div>
           </div>
           <div class="hair-est-cell">
             <div class="hair-est-lbl">💰 Precio aprox.</div>
@@ -774,6 +775,8 @@ function updateHairEstimate() {
   const svc   = S.service;
 
   document.getElementById('hairEstDur').textContent   = dur   ? fmtDur(dur) : '—';
+  document.getElementById('hairEstDurNote').textContent =
+    (svc?.durMax && dur !== svc.dur) ? 'Puede variar según la condición del cabello al llegar al salón' : '';
   document.getElementById('hairEstPrice').textContent = price ? `₡${price.toLocaleString()}` : '—';
   document.getElementById('hairEstPriceNote').textContent =
     (svc?.priceMax && price !== svc.price) ? 'Puede variar según la condición del cabello al llegar al salón' : '';
