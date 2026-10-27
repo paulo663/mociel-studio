@@ -370,22 +370,18 @@
         <div class="hair-section-lbl">Largo</div>
         <div class="hair-opts" id="hairLengthOpts">
           <div class="hair-opt" onclick="pickHair('len',0,this)">
-            <div class="hair-icon">✂️</div>
             <div class="hair-lbl">Corto</div>
             <div class="hair-desc">Hasta los hombros</div>
           </div>
           <div class="hair-opt" onclick="pickHair('len',1,this)">
-            <div class="hair-icon">💇</div>
             <div class="hair-lbl">Medio</div>
             <div class="hair-desc">Mitad de la espalda</div>
           </div>
           <div class="hair-opt" onclick="pickHair('len',2,this)">
-            <div class="hair-icon">💇‍♀️</div>
             <div class="hair-lbl">Largo</div>
             <div class="hair-desc">Hasta la cintura</div>
           </div>
           <div class="hair-opt" onclick="pickHair('len',3,this)">
-            <div class="hair-icon">🦱</div>
             <div class="hair-lbl">Muy largo</div>
             <div class="hair-desc">Más abajo de la cintura</div>
           </div>
@@ -396,17 +392,14 @@
         <div class="hair-section-lbl">Abundancia</div>
         <div class="hair-opts" id="hairAbundOpts">
           <div class="hair-opt" onclick="pickHair('abund',0,this)">
-            <div class="hair-icon">🌿</div>
             <div class="hair-lbl">Poco abundante</div>
             <div class="hair-desc">Cabello fino o escaso</div>
           </div>
           <div class="hair-opt" onclick="pickHair('abund',1,this)">
-            <div class="hair-icon">🌳</div>
             <div class="hair-lbl">Abundante</div>
             <div class="hair-desc">Volumen normal</div>
           </div>
           <div class="hair-opt" onclick="pickHair('abund',2,this)">
-            <div class="hair-icon">🌲</div>
             <div class="hair-lbl">Muy abundante</div>
             <div class="hair-desc">Mucho volumen o grueso</div>
           </div>
@@ -769,7 +762,7 @@ function updateConsultaBtn() {
   const hair = hairDesc();
   const extra = hair ? `\nTengo el ${hair}.` : '';
   const msg = encodeURIComponent(
-    `Hola Mon Ciel Studio 👋 Quiero reservar *${svc}* y tengo una consulta antes de confirmar.${extra}\n¿Me pueden ayudar?`
+    `Hola Mon Ciel Studio, quiero reservar *${svc}* y tengo una consulta antes de confirmar.${extra}\n¿Me pueden ayudar?`
   );
   btn.href = `https://wa.me/${CFG.WHATSAPP}?text=${msg}`;
 }
@@ -779,7 +772,7 @@ function updateConsultaHairBtn() {
   if (!btn || !S.service) return;
   const svc = S.service.name;
   const msg = encodeURIComponent(
-    `Hola Mon Ciel Studio 👋 Estoy por reservar *${svc}* y tengo dudas sobre cuál largo de cabello elegir para la reserva.\n¿Me pueden orientar?`
+    `Hola Mon Ciel Studio, estoy por reservar *${svc}* y tengo dudas sobre cuál largo de cabello elegir para la reserva.\n¿Me pueden orientar?`
   );
   btn.href = `https://wa.me/${CFG.WHATSAPP}?text=${msg}`;
 }
@@ -979,7 +972,7 @@ function buildConfirmation(b) {
     </div>`;
 
   const msg = encodeURIComponent(
-    `Hola Mon Ciel Studio! 👋\n\nReservé una cita:\n\n`+
+    `Hola Mon Ciel Studio, reservé una cita:\n\n`+
     `${b.svcIcon} *${b.svcName}*\n📅 ${dateStr}\n`+
     `${b.empId!=='any'?`👤 ${b.empName}\n`:''}\n`+
     `Mi nombre es ${b.clientName}. ¡Nos vemos pronto! ✨`
