@@ -708,7 +708,7 @@ function setCat(c) {
 
 function fmtPrice(s) {
   if (s.priceMax) {
-    return `<span class="svc-price">Desde ₡${s.price.toLocaleString()} <span class="svc-price-from">hasta ₡${s.priceMax.toLocaleString()}</span></span>`;
+    return `<span class="svc-price">Desde ₡${s.price.toLocaleString()} – ₡${s.priceMax.toLocaleString()}</span>`;
   }
   return `<span class="svc-price">₡${s.price.toLocaleString()}</span>`;
 }
