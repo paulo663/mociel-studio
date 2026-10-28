@@ -112,10 +112,10 @@
     .cat-tab.active { background: var(--dark); border-color: var(--dark); color: #fff; }
 
     /* ── SERVICE GRID ── */
-    .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, 160px); justify-content: center; gap: .85rem; }
+    .svc-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: .85rem; }
     .svc-card { background: #fff; border-radius: var(--r); padding: .8rem;
       cursor: pointer; border: 2px solid transparent; transition: all .22s;
-      box-shadow: var(--sh); position: relative; }
+      box-shadow: var(--sh); position: relative; flex: 0 0 160px; }
     .svc-card:hover { transform: translateY(-2px); box-shadow: var(--sh2); border-color: var(--cambridge); }
     .svc-card.sel { border-color: var(--gold); background: #FFFBF5; }
     .svc-card.sel::after { content: '✓'; position: absolute; top: .65rem; right: .65rem;
@@ -320,7 +320,8 @@
       .bk-logo img { height: 65px; width: 192px; }
     }
     @media(max-width:480px) {
-      .svc-grid { grid-template-columns: 1fr 1fr; }
+      .svc-grid { gap: .6rem; }
+      .svc-card { flex: 0 0 calc(50% - .3rem); }
       .emp-grid { grid-template-columns: repeat(2,1fr); }
       .slots-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
       .hair-opts { flex-wrap: wrap; }
